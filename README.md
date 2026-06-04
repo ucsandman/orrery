@@ -26,6 +26,8 @@ restricted three-body problem) are specified in `SPEC.md` and tracked in
 ## Quick start
 
 ```
+git clone git@github.com:ucsandman/orrery.git
+cd orrery
 npm install
 npm test          # run the test suite
 npm run typecheck # typecheck with no emit
@@ -34,6 +36,8 @@ npm run check     # typecheck then test
 
 The core needs nothing beyond Node 20 or newer and the dev dependencies installed
 by `npm install`.
+
+Repository: https://github.com/ucsandman/orrery
 
 ## Documents
 
