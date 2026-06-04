@@ -1,0 +1,202 @@
+{
+  "description": "Numeric ratchet for Orrery. Each entry has a current value (where the engine is now) and a target (what done means). Current values start at the failing baseline and only move toward target through verified runs. Targets that are tolerances trace to SPEC.md and to a cited source; they are never fabricated, and an invariant threshold flips from pending to a real measured current only when a committed test records it.",
+  "updated": "2026-06-04",
+  "ratchets": {
+    "milestonesComplete": {
+      "current": 1,
+      "target": 8,
+      "direction": "up",
+      "unit": "count",
+      "note": "Milestone 1 (vectors, matrices, units, time, constants, seeded rng, compensated sum) is implemented and green."
+    },
+    "milestoneFraction": {
+      "current": 0.125,
+      "target": 1.0,
+      "direction": "up",
+      "unit": "fraction"
+    },
+    "testsPassing": {
+      "current": 44,
+      "target": 83,
+      "direction": "up",
+      "unit": "count",
+      "note": "Floor target: at least one passing test per acceptance criterion across all eight milestones (44 passing now plus 39 still-todo criteria)."
+    },
+    "testsTodo": {
+      "current": 39,
+      "target": 0,
+      "direction": "down",
+      "unit": "count",
+      "note": "Acceptance criteria for milestones 2 through 8, recorded as test.todo in test/roadmap.test.ts, each owed a real test."
+    },
+    "testsFailing": {
+      "current": 0,
+      "target": 0,
+      "direction": "down",
+      "unit": "count",
+      "note": "A break push files a failing test first, which raises this above zero until the fix lands."
+    },
+    "nanInfOccurrences": {
+      "current": 0,
+      "target": 0,
+      "direction": "down",
+      "unit": "count",
+      "note": "Hard invariant across every milestone: no NaN and no Infinity ever appears in a state, element, or derived quantity."
+    }
+  },
+  "invariantThresholds": {
+    "splitJdRoundTripError": {
+      "current": null,
+      "target": 1e-6,
+      "direction": "down",
+      "unit": "seconds (absolute)",
+      "milestone": 1,
+      "status": "enforced",
+      "note": "Enforced now by src/core/time.test.ts within atol 1e-6 s over +/- 200 years; exact observed maximum not separately recorded."
+    },
+    "keplerRoundTripError": {
+      "current": null,
+      "target": 1e-12,
+      "direction": "down",
+      "unit": "relative (rtol, atol 1e-9 SI)",
+      "milestone": 2,
+      "status": "pending",
+      "note": "COE to RV to COE round trip for well-conditioned orbits."
+    },
+    "universalVsRegimeError": {
+      "current": null,
+      "target": 1e-9,
+      "direction": "down",
+      "unit": "relative (state vector)",
+      "milestone": 2,
+      "status": "pending",
+      "note": "Two independent Kepler solvers must agree away from e = 1."
+    },
+    "stumpffContinuityError": {
+      "current": null,
+      "target": 1e-12,
+      "direction": "down",
+      "unit": "absolute",
+      "milestone": 2,
+      "status": "pending",
+      "note": "Closed form and Taylor series for C(z), S(z) must agree at the |z| ~ 1e-4 seam."
+    },
+    "numericVsAnalyticLeapfrog": {
+      "current": null,
+      "target": 1e-4,
+      "direction": "down",
+      "unit": "relative (position)",
+      "milestone": 4,
+      "status": "pending",
+      "note": "Velocity-Verlet leapfrog vs analytic Kepler, 1 to 10 orbits at h = period/1000. Loose start, tighten from a measured run."
+    },
+    "numericVsAnalyticRK4": {
+      "current": null,
+      "target": 1e-6,
+      "direction": "down",
+      "unit": "relative (position)",
+      "milestone": 4,
+      "status": "pending",
+      "note": "RK4 vs analytic Kepler over short horizons. Calibrate from a measured run."
+    },
+    "maxEnergyDriftLeapfrog": {
+      "current": null,
+      "target": 1e-3,
+      "direction": "down",
+      "unit": "relative (max over a 1000-orbit fixed-step run)",
+      "milestone": 4,
+      "status": "pending",
+      "note": "Symplectic: bounded and non-growing, not secular. Bound calibrated from a measured envelope."
+    },
+    "maxEnergyDriftPEFRL": {
+      "current": null,
+      "target": 1e-6,
+      "direction": "down",
+      "unit": "relative (max over a 1000-orbit fixed-step run)",
+      "milestone": 4,
+      "status": "pending",
+      "note": "Fourth-order symplectic: tighter bounded band than leapfrog. Calibrate from a measured envelope."
+    },
+    "linearMomentumDrift": {
+      "current": null,
+      "target": 1e-12,
+      "direction": "down",
+      "unit": "absolute (scaled by total |m v|)",
+      "milestone": 4,
+      "status": "pending",
+      "note": "Equal-and-opposite force writes make this machine-noise level, independent of integrator order."
+    },
+    "angularMomentumDrift": {
+      "current": null,
+      "target": 1e-9,
+      "direction": "down",
+      "unit": "relative",
+      "milestone": 4,
+      "status": "pending",
+      "note": "Symplectic methods, bounded and non-secular. Calibrate from a measured run."
+    },
+    "replayByteIdentical": {
+      "current": false,
+      "target": true,
+      "direction": "boolean",
+      "unit": "exact ArrayBuffer byte equality",
+      "milestone": 4,
+      "status": "pending",
+      "note": "Same scene, seed, integrator, step, and step count yields byte-identical state on the pinned engine."
+    },
+    "lambertEndpointError": {
+      "current": null,
+      "target": 1e-9,
+      "direction": "down",
+      "unit": "relative (recovered position)",
+      "milestone": 5,
+      "status": "pending",
+      "note": "Re-propagating the solved velocity recovers the target position."
+    },
+    "lambertIzzoVsBmwError": {
+      "current": null,
+      "target": 1e-9,
+      "direction": "down",
+      "unit": "relative (velocity vectors)",
+      "milestone": 5,
+      "status": "pending",
+      "note": "Two independent Lambert solvers must agree on the single-rev solution."
+    },
+    "earthMarsVinfError": {
+      "current": null,
+      "target": 1e-3,
+      "direction": "down",
+      "unit": "relative",
+      "milestone": 7,
+      "status": "pending",
+      "note": "Patched-conic excess speeds vs Curtis Example 8.8 (3.1651 and 2.8851 km/s). Loose to absorb textbook rounding."
+    },
+    "lagrangeL4L5Error": {
+      "current": null,
+      "target": 1e-14,
+      "direction": "down",
+      "unit": "relative",
+      "milestone": 8,
+      "status": "pending",
+      "note": "L4/L5 are exact closed form (1/2 - mu, +/- sqrt(3)/2); only floating-point rounding error remains."
+    },
+    "collinearResidual": {
+      "current": null,
+      "target": 1e-12,
+      "direction": "down",
+      "unit": "absolute (|dOmega/dx| at the converged point)",
+      "milestone": 8,
+      "status": "pending",
+      "note": "Test the physics residual of the converged collinear Lagrange point, not a transcribed number."
+    },
+    "jacobiDriftBound": {
+      "current": null,
+      "target": 1e-8,
+      "direction": "down",
+      "unit": "relative (over the test span)",
+      "milestone": 8,
+      "status": "pending",
+      "note": "Jacobi constant under leapfrog in the rotating frame: bounded oscillation, no secular growth. Bound set after the integrator is measured."
+    }
+  }
+}

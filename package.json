@@ -1,0 +1,23 @@
+{
+  "name": "orrery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic astrodynamics engine and mission planner with a dependency-free TypeScript core.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "fast-check": "^4.8.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

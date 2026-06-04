@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test and coverage artifacts
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor and OS
+.DS_Store
+.idea/
+.vscode/
+
+# Local environment (introduced with the API layer, never required by the core)
+.env
+.env.local
+
+# Design workflow scratch (not part of the project)
+.orrery-design-workflow.mjs
