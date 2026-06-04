@@ -119,6 +119,9 @@ the production sandbox the `SPEC.md` plans.
   milestones with binary acceptance criteria.
 - `bar.json`: the numeric ratchet of current values against targets.
 - `CLAUDE.md`: the stack, the standards, and the build and break working loop.
+- `verify-external/SPEC-external.md` and `verify-external/bar-external.json`: the
+  contract and ratchet for the external differential-validation layer.
+- `web/README.md`: how to run the playground and what each panel does.
 
 ## Layout
 
@@ -136,6 +139,8 @@ src/index.ts     the public barrel
 test/harness     shared tolerance and conservation helpers for tests
 test/break       the adversarial break-push suite
 test             the milestone roadmap (now a public-surface completeness check)
+verify-external  external differential validation against JPL Horizons and hapsira
+web              zero-install browser playground (bundles the real core)
 ```
 
 The dependency rule is one-way: lower-numbered milestones never import
