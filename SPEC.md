@@ -98,7 +98,23 @@ test/
   harness/         shared invariant and tolerance helpers
   fixtures/        committed golden scenes and textbook oracles
   roadmap.test.ts  pending acceptance criteria as test.todo
+web/               zero-install browser playground (see below)
 ```
+
+### The web playground
+
+`web/` is a zero-install browser playground for seeing and using the core:
+interactive panels for orbit design, Kepler propagation, Lambert transfers,
+maneuvers, the planets, and the Lagrange points. It loads the real core, bundled
+unchanged from `src/index.ts` by esbuild into `web/orrery-core.js` (global
+`Orrery`) via `npm run build:web`, and contains no orbital mechanics of its own.
+
+It is deliberately not the planned Next.js plus PixiJS sandbox above, and it does
+not replace it. The reason, recorded here per the stack rule: the playground's job
+is to make the core immediately legible and explorable with no install and no build
+server (open a file, or `npm run web`), using vanilla Canvas so it stays a single
+static page. esbuild is a dev-only bundler; it adds nothing to the core's runtime,
+which keeps its zero-dependency rule. The production sandbox remains a later layer.
 
 ## Determinism contract
 

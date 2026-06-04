@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orrery playground</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Orrery <span class="dim">/ astrodynamics playground</span></h1>
+    <p>Every number and curve below is computed live by the real engine core. Pick a tab and start moving the sliders.</p>
+  </header>
+  <nav id="tabs"></nav>
+  <main id="panels"></main>
+  <footer>
+    Powered by the bundled <code>Orrery</code> core (<code>npm run build:web</code>). Planet positions use the
+    approximate Standish model (a few arcminutes over 1800&ndash;2050), not an ephemeris-grade prediction.
+  </footer>
+
+  <!-- The real compiled core, as a global `Orrery`. -->
+  <script src="orrery-core.js"></script>
+  <!-- Cited planet element tables (the core exposes only Earth and Mars). -->
+  <script src="data/planets.js"></script>
+  <!-- UI framework + boot (defines UI, runs on DOMContentLoaded). -->
+  <script src="app.js"></script>
+  <!-- Panels register themselves with UI.registerPanel before boot. -->
+  <script src="panels/orbit.js"></script>
+  <script src="panels/transfer.js"></script>
+  <script src="panels/maneuvers.js"></script>
+  <script src="panels/solar.js"></script>
+  <script src="panels/lagrange.js"></script>
+</body>
+</html>

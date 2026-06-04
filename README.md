@@ -92,6 +92,26 @@ by `npm install`.
 
 Repository: https://github.com/ucsandman/orrery
 
+## Playground
+
+To see and use the engine, there is a zero-install browser playground in `web/`. It
+loads the real compiled core and gives you interactive panels: design an orbit and
+watch a body move along it at the true Kepler speed, plan a Lambert transfer and read
+off its burns, compare Hohmann against bi-elliptic, animate the planets over any
+date, and explore the Lagrange points over the effective-potential field. Every
+number and curve is computed live by the core.
+
+```
+npm install
+npm run build:web   # bundle the core into web/orrery-core.js (esbuild)
+npm run web         # serve it, then open the printed http://localhost:5173/
+```
+
+`npm run web` is the reliable way (some browsers block local files from `file://`);
+otherwise you can open `web/index.html` directly. Details and a per-panel guide are
+in `web/README.md`. The playground is a teaching and exploration tool, separate from
+the production sandbox the `SPEC.md` plans.
+
 ## Documents
 
 - `SPEC.md`: the architecture decision, the verification strategy, and the eight
