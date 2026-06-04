@@ -1,0 +1,1043 @@
+{
+ "meta": {
+  "description": "JPL Horizons heliocentric ecliptic-J2000 geometric state vectors for the eight planet-system barycenters, the external Oracle A truth.",
+  "epochs_jd_tdb": [
+   2415020.0,
+   2433282.5,
+   2451545.0,
+   2469807.5
+  ],
+  "au_km": 149597870.7,
+  "frame": "ecliptic-J2000",
+  "origin": "sun",
+  "geometry": "geometric (no light-time, no aberration)",
+  "time_note": "Horizons vector epochs are TDB; the core treats jd as TT. TDB-TT is at most about 1.7 ms, far below the Standish accuracy envelope, so it is carried as a bounded documented offset and not corrected."
+ },
+ "bodyCount": 8,
+ "records": [
+  {
+   "body": "mercury",
+   "naif_id": 1,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.3897247627621097,
+    -0.1502240724030943,
+    0.02361992691022857
+   ],
+   "v_aupd": [
+    0.004301522233177224,
+    -0.0250162382752847,
+    -0.002436203190423375
+   ],
+   "r_km": [
+    -58301994.66827426,
+    -22473201.359385535,
+    3533490.7718598237
+   ],
+   "v_kms": [
+    7.447900079305806,
+    -43.31453679289851,
+    -4.218180669906059
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mercury",
+   "naif_id": 1,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    0.3208815126064326,
+    0.09919523755987102,
+    -0.02139653050292696
+   ],
+   "v_aupd": [
+    -0.01375997194622811,
+    0.02814371140547334,
+    0.003561886988510359
+   ],
+   "r_km": [
+    48003191.03291752,
+    14839396.322537366,
+    -3200875.403605473
+   ],
+   "v_kms": [
+    -23.82479750054931,
+    48.7296215260893,
+    6.1672535781850115
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mercury",
+   "naif_id": 1,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.1300936053754522,
+    -0.4472876181353563,
+    -0.02459830695805179
+   ],
+   "v_aupd": [
+    0.02136639566801616,
+    -0.006447989743836899,
+    -0.002487863414837162
+   ],
+   "r_km": [
+    -19461726.35585372,
+    -66913275.263523996,
+    -3679854.343749542
+   ],
+   "v_kms": [
+    36.99499185727918,
+    -11.164415925618501,
+    -4.3076281186582195
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mercury",
+   "naif_id": 1,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.179514042484485,
+    0.2678117696735194,
+    0.03834830324254487
+   ],
+   "v_aupd": [
+    -0.02904542095821605,
+    -0.01457880238639018,
+    0.001470321649527605
+   ],
+   "r_km": [
+    -26854918.51642829,
+    40064070.49155733,
+    5736824.510042618
+   ],
+   "v_kms": [
+    -50.290892695998544,
+    -25.242567064352425,
+    2.5457984723777933
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "venus",
+   "naif_id": 2,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    0.6971427332208422,
+    -0.2033634805445353,
+    -0.04301996831230595
+   ],
+   "v_aupd": [
+    0.005557133996659593,
+    0.01932747800193507,
+    -6.245185196989844e-05
+   ],
+   "r_km": [
+    104291068.46381614,
+    -30422743.667603355,
+    -6435695.657102442
+   ],
+   "v_kms": [
+    9.621937651560833,
+    33.46469392465945,
+    -0.10813268606444916
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "venus",
+   "naif_id": 2,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    0.09427794081347,
+    0.7138887939817755,
+    0.004209010424116465
+   ],
+   "v_aupd": [
+    -0.02012121325742756,
+    0.002544987147295212,
+    0.001196676432591341
+   ],
+   "r_km": [
+    14103779.199675737,
+    106796243.49626458,
+    629658.997201927
+   ],
+   "v_kms": [
+    -34.83901225939553,
+    4.406535395766562,
+    2.0719935906543596
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "venus",
+   "naif_id": 2,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.718302296345389,
+    -0.03265430819980606,
+    0.04101418202684621
+   ],
+   "v_aupd": [
+    0.0007981175157753219,
+    -0.02029521870223381,
+    -0.0003234515157278357
+   ],
+   "r_km": [
+    -107456494.05219057,
+    -4885014.975872536,
+    6135634.299718402
+   ],
+   "v_kms": [
+    1.3819060292634469,
+    -35.140295176446706,
+    -0.5600423382820807
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "venus",
+   "naif_id": 2,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    0.1417822235551292,
+    -0.7133842157318016,
+    -0.0180256677459316
+   ],
+   "v_aupd": [
+    0.01970202520985986,
+    0.003873000003324849,
+    -0.001082942722975158
+   ],
+   "r_km": [
+    21210318.74695871,
+    -106720759.66446695,
+    -2696601.5127370358
+   ],
+   "v_kms": [
+    34.11320624852726,
+    6.705932334704749,
+    -1.875068581564162
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "earth",
+   "naif_id": 3,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.1883091886575445,
+    0.9650389389460197,
+    0.0002150805290972767
+   ],
+   "v_aupd": [
+    -0.01716759551621979,
+    -0.003357807375357452,
+    -1.11575618670527e-06
+   ],
+   "r_km": [
+    -28170653.656413246,
+    144367770.40891182,
+    32175.589181981984
+   ],
+   "v_kms": [
+    -29.724950628071152,
+    -5.813898536738778,
+    -0.0019318836776789354
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "earth",
+   "naif_id": 3,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.1827019777847186,
+    0.9661458551954407,
+    0.0001101819495711953
+   ],
+   "v_aupd": [
+    -0.0171858789069909,
+    -0.003260575717417983,
+    -5.669905510253159e-07
+   ],
+   "r_km": [
+    -27331826.849272605,
+    144533362.72286844,
+    16482.985045425594
+   ],
+   "v_kms": [
+    -29.75660753002178,
+    -5.645546117845545,
+    -0.0009817196659769323
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "earth",
+   "naif_id": 3,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.1771587841839055,
+    0.9672193524609504,
+    -1.139275508446145e-06
+   ],
+   "v_aupd": [
+    -0.01720310905522688,
+    -0.003163911860749114,
+    2.424167134816753e-08
+   ],
+   "r_km": [
+    -26502576.889713097,
+    144693955.62799096,
+    -170.43319020420316
+   ],
+   "v_kms": [
+    -29.78644078798414,
+    -5.47817682234424,
+    4.1973407591378013e-05
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "earth",
+   "naif_id": 3,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.1715829623696938,
+    0.9682682880886148,
+    -0.0001081487189538922
+   ],
+   "v_aupd": [
+    -0.01721987955350517,
+    -0.003067159355751021,
+    5.24990526850117e-07
+   ],
+   "r_km": [
+    -25668445.81890442,
+    144850874.16439092,
+    -16178.818074435003
+   ],
+   "v_kms": [
+    -29.81547818188472,
+    -5.310654036087228,
+    0.0009089984369727857
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mars",
+   "naif_id": 4,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    0.4284327086517202,
+    -1.355235581719087,
+    -0.03896474917119835
+   ],
+   "v_aupd": [
+    0.01388020033420787,
+    0.005413034571504442,
+    -0.0002309577919684681
+   ],
+   "r_km": [
+    64092620.9525308,
+    -202740357.32205126,
+    -5829043.508370862
+   ],
+   "v_kms": [
+    24.032967764894973,
+    9.372435716696195,
+    -0.3998934479173193
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mars",
+   "naif_id": 4,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -1.395553774894645,
+    0.9043964307255137,
+    0.05337868315184154
+   ],
+   "v_aupd": [
+    -0.007079450115992777,
+    -0.01055357340807742,
+    -4.613925541143616e-05
+   ],
+   "r_km": [
+    -208771873.17158598,
+    135295780.30521688,
+    7985337.340285459
+   ],
+   "v_kms": [
+    -12.257762304159577,
+    -18.273056830144952,
+    -0.07988812922724886
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mars",
+   "naif_id": 4,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    1.390715921746287,
+    -0.01341631815233992,
+    -0.03446766277585426
+   ],
+   "v_aupd": [
+    0.000671499521033585,
+    0.0151872480911503,
+    0.0003016517626039734
+   ],
+   "r_km": [
+    208048140.64183235,
+    -2007052.62822381,
+    -5156288.959273448
+   ],
+   "v_kms": [
+    1.1626724366052565,
+    26.29606453968431,
+    0.5222970066950962
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "mars",
+   "naif_id": 4,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -1.54323168777937,
+    -0.5035895204729829,
+    0.02720193305006915
+   ],
+   "v_aupd": [
+    0.004861797714874932,
+    -0.01210505177414021,
+    -0.000372737941662889
+   ],
+   "r_km": [
+    -230864174.48856094,
+    -75335919.96959229,
+    4069351.2632143013
+   ],
+   "v_kms": [
+    8.417992892585827,
+    -20.959374654220284,
+    -0.6453796574290394
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "jupiter",
+   "naif_id": 5,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -3.019123829909995,
+    -4.458255050323395,
+    0.08586571898436654
+   ],
+   "v_aupd": [
+    0.006165407117519501,
+    -0.003879414818636249,
+    -0.0001225486136730314
+   ],
+   "r_km": [
+    -451654496.3341642,
+    -666945462.5659012,
+    12845328.7261858
+   ],
+   "v_kms": [
+    10.675136305318773,
+    -6.717039310532517,
+    -0.21218763498521304
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "jupiter",
+   "naif_id": 5,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    3.406606567761871,
+    -3.760530074704583,
+    -0.06089143087800919
+   ],
+   "v_aupd": [
+    0.005504666519359561,
+    0.005430015346840581,
+    -0.0001456615308578486
+   ],
+   "r_km": [
+    509621088.8498111,
+    -562567291.8791175,
+    -9109228.403226405
+   ],
+   "v_kms": [
+    9.531092479279751,
+    9.401837196246213,
+    -0.25220665346338533
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "jupiter",
+   "naif_id": 5,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    4.001177161126058,
+    2.938576106966103,
+    -0.101785276633744
+   ],
+   "v_aupd": [
+    -0.004568313526752718,
+    0.006443206010221308,
+    7.55795202577445e-05
+   ],
+   "r_km": [
+    598567583.597929,
+    439604728.4920244,
+    -15226860.653018564
+   ],
+   "v_kms": [
+    -7.909837688567292,
+    11.156133097344329,
+    0.13086267707275567
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "jupiter",
+   "naif_id": 5,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -2.39104634493199,
+    4.664074051129192,
+    0.03396564221877785
+   ],
+   "v_aupd": [
+    -0.00681767578348079,
+    -0.003096749005025743,
+    0.0001654141153083914
+   ],
+   "r_km": [
+    -357695441.9468434,
+    697735546.8360499,
+    5081187.752887189
+   ],
+   "v_kms": [
+    -11.804511346431486,
+    -5.361887236622624,
+    0.2864074008548568
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "saturn",
+   "naif_id": 6,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -0.369603264566468,
+    -10.05823895974353,
+    0.1916872191614704
+   ],
+   "v_aupd": [
+    0.00527386506082171,
+    -0.0002291593931265976,
+    -0.0002050310190880604
+   ],
+   "r_km": [
+    -55291861.38291237,
+    -1504691131.369415,
+    28675999.82696021
+   ],
+   "v_kms": [
+    9.131469715949695,
+    -0.3967795979472594,
+    -0.3550023597572325
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "saturn",
+   "naif_id": 6,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -9.007365273104547,
+    2.50042942092649,
+    0.313989356935002
+   ],
+   "v_aupd": [
+    -0.001786280961673947,
+    -0.005384353785266602,
+    0.0001653701227175936
+   ],
+   "r_km": [
+    -1347482665.4735641,
+    374058917.2062369,
+    46972139.219938576
+   ],
+   "v_kms": [
+    -3.092868383545958,
+    -9.32277617327973,
+    0.28633122958275115
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "saturn",
+   "naif_id": 6,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    6.406408859532809,
+    6.569989616912557,
+    -0.3690764262448534
+   ],
+   "v_aupd": [
+    -0.00429235187384325,
+    0.003890315698014864,
+    0.0001029478493989804
+   ],
+   "r_km": [
+    958385124.2197236,
+    982856457.2112272,
+    -55213047.49179566
+   ],
+   "v_kms": [
+    -7.432021997941032,
+    6.735913712659812,
+    0.1782497576762933
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "saturn",
+   "naif_id": 6,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    4.766225421471267,
+    -8.773719932777603,
+    -0.03787676542813846
+   ],
+   "v_aupd": [
+    0.004594510460960312,
+    0.002649472402110743,
+    -0.0002291045475944737
+   ],
+   "r_km": [
+    713017174.3283116,
+    -1312529820.0616763,
+    -5666283.457052887
+   ],
+   "v_kms": [
+    7.955196549404376,
+    4.587447104562284,
+    -0.3966846352756952
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "uranus",
+   "naif_id": 7,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -6.481093817226346,
+    -17.85267982605307,
+    0.01779084071495696
+   ],
+   "v_aupd": [
+    0.003674182027287776,
+    -0.001528856157386039,
+    -5.351591476770815e-05
+   ],
+   "r_km": [
+    -969557834.8639963,
+    -2670722888.2663856,
+    2661471.888920427
+   ],
+   "v_kms": [
+    6.361687590815515,
+    -2.6471484461983277,
+    -0.09266049650245166
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "uranus",
+   "naif_id": 7,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -1.241444804038292,
+    18.90453844218382,
+    0.0864795260924592
+   ],
+   "v_aupd": [
+    -0.003950133764396275,
+    -0.0004380101252345488,
+    4.961248917656761e-05
+   ],
+   "r_km": [
+    -185717499.27570722,
+    2828078697.5169945,
+    12937152.962576985
+   ],
+   "v_kms": [
+    -6.839486112660396,
+    -0.7583956259274172,
+    0.08590188357570962
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "uranus",
+   "naif_id": 7,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    14.43185661438178,
+    -13.73432146877096,
+    -0.2381416877992503
+   ],
+   "v_aupd": [
+    0.00267810559142015,
+    0.002672695895712686,
+    -2.477206355505103e-05
+   ],
+   "r_km": [
+    2158975019.7592254,
+    -2054625247.237432,
+    -35625489.41967201
+   ],
+   "v_kms": [
+    4.637024235951604,
+    4.627657581333878,
+    -0.04289175880417484
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "uranus",
+   "naif_id": 7,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -17.82323641511405,
+    4.07148301656417,
+    0.2458503411213354
+   ],
+   "v_aupd": [
+    -0.0009101967696381948,
+    -0.004021537332158423,
+    -3.110845750543546e-06
+   ],
+   "r_km": [
+    -2666318216.683763,
+    609085189.8692126,
+    36778687.54262042
+   ],
+   "v_kms": [
+    -1.5759664196283838,
+    -6.963118308234474,
+    -0.005386295143026133
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "neptune",
+   "naif_id": 8,
+   "jd_tdb": 2415020.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    1.516449728633301,
+    29.82548275256067,
+    -0.6491486149414945
+   ],
+   "v_aupd": [
+    -0.003145834440637819,
+    0.0001762936576852327,
+    6.875420857386345e-05
+   ],
+   "r_km": [
+    226857650.42713463,
+    4461828712.382651,
+    -97111250.56310177
+   ],
+   "v_kms": [
+    -5.446876549700732,
+    0.3052448588845544,
+    0.11904494449437099
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "neptune",
+   "naif_id": 8,
+   "jd_tdb": 2433282.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    -29.09262413350747,
+    -8.409026602184248,
+    0.8433802290035933
+   ],
+   "v_aupd": [
+    0.0008578955419579501,
+    -0.002992807872545275,
+    4.195249510207964e-05
+   ],
+   "r_km": [
+    -4352194623.44815,
+    -1257972474.3464193,
+    126167886.44941594
+   ],
+   "v_kms": [
+    1.4854091013881,
+    -5.181917652164006,
+    0.07263893446554738
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "neptune",
+   "naif_id": 8,
+   "jd_tdb": 2451545.0,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    16.81204696805288,
+    -24.99176288928469,
+    0.1272228799202476
+   ],
+   "v_aupd": [
+    0.002579274259047737,
+    0.001776900820016126,
+    -9.590961498591593e-05
+   ],
+   "r_km": [
+    2515046428.5291014,
+    -3738714513.276269,
+    19032271.940390825
+   ],
+   "v_kms": [
+    4.465902049824788,
+    3.0766270731423195,
+    -0.1660633585827527
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  },
+  {
+   "body": "neptune",
+   "naif_id": 8,
+   "jd_tdb": 2469807.5,
+   "frame": "ecliptic-J2000",
+   "origin": "sun",
+   "units": {
+    "position": "AU",
+    "velocity": "AU/day"
+   },
+   "r_au": [
+    17.39819881068304,
+    24.19778398623797,
+    -0.8992418129822297
+   ],
+   "v_aupd": [
+    -0.002572492909775959,
+    0.001850343743778257,
+    2.110076042488964e-05
+   ],
+   "r_km": [
+    2602733496.0934553,
+    3619936959.999758,
+    -134524660.46654916
+   ],
+   "v_kms": [
+    -4.4541604362654015,
+    3.20379032560525,
+    0.03653505589947126
+   ],
+   "source": "JPL Horizons vectors, location=@sun, refplane=ecliptic, aberrations=geometric"
+  }
+ ]
+}

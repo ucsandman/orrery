@@ -1,0 +1,100 @@
+{
+  "description": "External differential ratchet for Orrery. The verify-external/ layer cross-checks the unmodified core against an independent astrodynamics library (hapsira 0.18.0, the maintained poliastro fork) plus scipy and cited closed forms, and against committed JPL Horizons fixtures, offline and deterministically from a fixed seed. Each entry has a current value (the worst agreement error observed in a real external run, or null before the first run) and a target (the asserted tolerance, traced to a source). Targets for exact methods are anchored to the core's own measured internal envelope in bar.json plus oracle-method headroom; targets for approximate models are the model's published accuracy envelope, never machine precision. Current values move toward target only through verified runs. Every current below was produced by the committed run shown in the turn STATUS block. No number here is fabricated.",
+  "updated": "2026-06-04",
+  "pinnedOracle": "hapsira==0.18.0 (poliastro fork); scipy and cited closed forms for the pieces hapsira does not cover; resolved dependency versions in requirements.lock",
+  "seedPolicy": "Engine outputs are emitted by verify-external/sample/emit.ts from the per-category integer seeds in sample/seeds.ts (recorded in each generated JSON). The core's xoshiro256** generator and the forbidden wall-clock and nondeterministic-random rules make a fixed input reproducible; the external sample uses its own fixed seed. After the one-time Horizons fixture fetch, the entire suite runs offline against committed fixtures.",
+  "agreement": {
+    "standishVsHorizons": {
+      "current": 3.27e-3,
+      "target": 4.0e-3,
+      "direction": "down",
+      "unit": "relative (max heliocentric position error of the Standish model over all fixtures)",
+      "status": "green",
+      "source": "JPL Keplerian Elements for Approximate Positions of the Major Planets (Standish), 1800-2050 envelope; two-tier STANDISH_POS_RTOL_TERRESTRIAL 1e-3 and STANDISH_POS_RTOL_GIANT 4e-3 in tests/tolerances.py",
+      "note": "planetStateAtJD (Curtis Algorithm 8.1) vs committed Horizons heliocentric ecliptic J2000 geometric vectors. Approximate model: held to its published envelope, never to engine precision. current 3.27e-3 is Saturn (the Jupiter-Saturn great inequality this low-precision set omits), within the 4e-3 giant tier. Earth and Mars (anchored to the core constants) worst is 3.37e-4, within the 1e-3 terrestrial tier. The exact per-planet published arcsecond figures are pending source re-verification; the two tiers are conservative ceilings labeled as such."
+    },
+    "elementsVsLibrary": {
+      "current": 5.48e-14,
+      "target": 1e-11,
+      "direction": "down",
+      "unit": "relative (state vector and classical elements)",
+      "status": "green",
+      "source": "bar.json keplerRoundTripError 8.7e-14 internal envelope + hapsira rv2coe/coe2rv float ordering; ELEMENTS_FWD_RTOL / ELEMENTS_INV_RTOL",
+      "note": "rvToElements and coeToRv vs hapsira rv2coe and coe2rv on the same SI input. Forward worst 1.15e-14, inverse worst 5.48e-14."
+    },
+    "keplerVsLibrary": {
+      "current": 2.17e-14,
+      "target": 1e-9,
+      "direction": "down",
+      "unit": "relative (state vector), atol 1e-3 m / 1e-6 m/s",
+      "status": "green",
+      "source": "bar.json universalVsRegimeError 7.0e-14 internal envelope + hapsira danby cutoff; KEPLER_RTOL",
+      "note": "propagateUniversal vs hapsira danby (converged to 1e-13) on the same input. Worst 2.17e-14."
+    },
+    "lambertVsLibrary": {
+      "current": 2.18e-15,
+      "target": 1e-8,
+      "direction": "down",
+      "unit": "relative (velocity vectors), atol 1e-6 m/s",
+      "status": "green",
+      "source": "bar.json lambertIzzoVsBmwError 4.4e-13 internal envelope + third-library Izzo cutoff; LAMBERT_VEL_RTOL",
+      "note": "lambertIzzo single-revolution vs hapsira core izzo. Worst 2.18e-15. The cross-propagator endpoint re-propagation (engine v1 through hapsira farnocchia reaching r2) worst is 1.59e-9 within LAMBERT_ENDPOINT_RTOL 1e-7. Multi-revolution branch matching is the next build push."
+    },
+    "maneuversVsLibrary": {
+      "current": 1.73e-15,
+      "target": 1e-10,
+      "direction": "down",
+      "unit": "relative (delta-v), atol 1e-6 m/s",
+      "status": "green",
+      "source": "hapsira Maneuver (hohmann, bielliptic) and cited closed forms (plane change, combined); correctly-rounded arithmetic; MANEUVER_DV_RTOL",
+      "note": "hohmann and biElliptic vs hapsira.core.maneuver; planeChange and combinedPlaneChange vs the cited closed form. Worst total-delta-v agreement 1.73e-15."
+    },
+    "lagrangeVsLibrary": {
+      "current": 1.42e-12,
+      "target": 1e-10,
+      "direction": "down",
+      "unit": "relative (L1..L5 positions)",
+      "status": "green",
+      "source": "bar.json lagrangeL4L5Error 4.7e-16 and collinearResidual 2.95e-14 + scipy brentq and hapsira mapping headroom; LAGRANGE_COLLINEAR_RTOL / LAGRANGE_EQUILATERAL_RTOL",
+      "note": "lagrangePoints vs hapsira.threebody.restricted.lagrange_points (worst 1.42e-12), an independent scipy.optimize.brentq collinear root (worst 2.77e-14), and the exact equilateral closed form for L4/L5 (worst 0.0). The |dOmega/dx| residual at the engine collinear points stays under LAGRANGE_COLLINEAR_RESIDUAL_ATOL 1e-12."
+    },
+    "patchedConicVsReference": {
+      "current": null,
+      "target": 1e-3,
+      "direction": "down",
+      "unit": "relative (hyperbolic excess speed)",
+      "status": "pending",
+      "source": "bar.json earthMarsVinfError target 1e-3 (internal current 4.2e-6 vs Curtis Example 8.8); PATCHED_CONIC_VINF_RTOL",
+      "note": "Not yet wired in the baseline. Approximate model: to be held to the patched-conic published envelope 1e-3, not to the internal 4.2e-6. The next build push wires transferArc against an independent heliocentric Lambert oracle."
+    }
+  },
+  "coverage": {
+    "fixtureCount": {
+      "current": 8,
+      "target": 8,
+      "direction": "up",
+      "unit": "count (committed Horizons planet bodies, one or more epochs each)",
+      "status": "green",
+      "source": "all eight major planet-system barycenters covered by committed JPL Horizons fixtures and the data/standish_all_planets.json element tables",
+      "note": "Eight bodies (barycenters 1 through 8) at four epochs each, 32 records, committed in fixtures/horizons_planets.json. Earth and Mars also anchor to the in-core STANDISH_EARTH/STANDISH_MARS; the other six come from the cited data file fed to the unmodified planetStateAtJD."
+    },
+    "sampleSize": {
+      "current": 256,
+      "target": 1024,
+      "direction": "up",
+      "unit": "count (nominal seeded cases per analytic category)",
+      "status": "pending",
+      "source": "SAMPLE_SIZE_NOMINAL in verify-external/sample/seeds.ts",
+      "note": "256 nominal cases per analytic category at baseline, raised toward 1024 as the suite matures. The adversarial profile adds 128 concentrated break-push cases per category and is wired but not yet committed as a separate run."
+    },
+    "unexplainedDisagreements": {
+      "current": 0,
+      "target": 0,
+      "direction": "down",
+      "unit": "count",
+      "status": "green",
+      "source": "verification rule: every cross-implementation disagreement above tolerance is either a filed failing test (a counterexample) or an explained, cited model-accuracy gap",
+      "note": "The committed run (11 tests) passes with zero disagreements above tolerance. The one approximate-model gap that the layer surfaced (Saturn at 3.27e-3 against the inner-planet envelope) is explained by and held to the giant-planet published envelope, not unexplained."
+    }
+  }
+}

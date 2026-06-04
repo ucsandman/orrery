@@ -1,0 +1,15 @@
+{
+  "name": "verify-external-emitter",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Engine JSON emitter for the Orrery external differential-validation layer. Imports the unmodified core from ../src and emits seeded engine outputs as JSON for the Python oracle suite to check. No runtime dependency is added to the core.",
+  "scripts": {
+    "emit": "tsx sample/emit.ts",
+    "emit:all": "tsx sample/emit.ts all"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3"
+  }
+}

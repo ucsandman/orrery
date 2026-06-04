@@ -1,0 +1,9 @@
+# Local environments and caches (never committed)
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+*.log
+
+# Run artifact: per-run measured maxima (the committed source of truth is bar-external.json)
+generated/measured.json

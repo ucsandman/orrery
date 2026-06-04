@@ -1,0 +1,6 @@
+# Top-level pins for the external validation oracle. The full resolved set with
+# every transitive dependency is in requirements.lock (pip freeze of this venv).
+hapsira==0.18.0
+scipy==1.17.1
+astroquery==0.4.11
+pytest
