@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from pathlib import Path
 
 from astropy.utils import iers
@@ -43,9 +44,15 @@ def vec_close(a, b, rtol: float = 0.0, atol: float = 0.0):
     return None
 
 
-def load_generated(category: str, profile: str = "nominal") -> dict:
+def load_generated(category: str, profile: str | None = None) -> dict:
     """Load the committed engine-output JSON for a category, found by glob so the
-    seed need not be duplicated on the Python side (it lives in sample/seeds.ts)."""
+    seed need not be duplicated on the Python side (it lives in sample/seeds.ts).
+
+    The profile defaults to the ORRERY_PROFILE environment variable (or "nominal"),
+    so the same test bodies run against the adversarial break-push sample by setting
+    ORRERY_PROFILE=adversarial, with no per-test change."""
+    if profile is None:
+        profile = os.environ.get("ORRERY_PROFILE", "nominal")
     matches = sorted(GENERATED.glob(f"{category}.*.{profile}.json"))
     if not matches:
         raise FileNotFoundError(

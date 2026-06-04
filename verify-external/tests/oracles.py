@@ -62,13 +62,32 @@ def propagate_robust(r0, v0, dt, mu):
     return np.asarray(out[0], float), np.asarray(out[1], float)
 
 
+def propagate_regime(r0, v0, dt, mu):
+    """Independent Kepler propagation, choosing the oracle by orbit regime.
+
+    danby is hapsira's "Kepler solver for both elliptic and parabolic orbits" (its
+    own docstring); its hyperbolic branch reduces the mean anomaly modulo 2*pi, which
+    is only valid for periodic elliptic motion, so it returns a wrong state for an
+    unbounded orbit. For bound orbits (specific orbital energy < 0) danby is used as a
+    method independent of the engine's universal variables; for unbounded orbits
+    (energy >= 0, every hyperbola the adversarial sample reaches) the robust all-conic
+    farnocchia is the independent oracle. The regime test uses the energy of the state
+    itself, not any engine output. Returns (r, v)."""
+    r0a = np.asarray(r0, float)
+    v0a = np.asarray(v0, float)
+    energy = 0.5 * float(v0a @ v0a) - float(mu) / float(np.linalg.norm(r0a))
+    if energy < 0.0:
+        return propagate(r0a, v0a, dt, mu)
+    return propagate_robust(r0a, v0a, dt, mu)
+
+
 # --- Lambert ------------------------------------------------------------------
 
 
 def lambert_single(r1, r2, tof, mu, retrograde):
     """hapsira core izzo single-revolution Lambert. Returns (v1, v2)."""
     v1, v2 = izzo_core(
-        mu,
+        float(mu),
         np.asarray(r1, float),
         np.asarray(r2, float),
         float(tof),
@@ -79,6 +98,41 @@ def lambert_single(r1, r2, tof, mu, retrograde):
         1e-8,
     )
     return np.asarray(v1, float), np.asarray(v2, float)
+
+
+def lambert_multi(r1, r2, tof, mu, retrograde, revs, lowpath):
+    """hapsira core izzo multi-revolution Lambert for a given revolution count `revs`
+    and branch `lowpath` (the vacant focus below the chord when True). Returns (v1, v2).
+    The engine's two multi-rev branches per revolution count (rightBranch False/True)
+    are matched against hapsira's two (lowpath False/True)."""
+    v1, v2 = izzo_core(
+        float(mu),
+        np.asarray(r1, float),
+        np.asarray(r2, float),
+        float(tof),
+        int(revs),
+        not retrograde,
+        bool(lowpath),
+        35,
+        1e-8,
+    )
+    return np.asarray(v1, float), np.asarray(v2, float)
+
+
+# --- Patched-conic transfer ---------------------------------------------------
+
+
+def patched_conic_vinf(r1, v_planet1, r2, v_planet2, tof, mu, retrograde=False):
+    """Independent hyperbolic excess speeds for a heliocentric transfer arc.
+
+    Solves the same heliocentric Lambert arc with hapsira izzo (an algorithm
+    independent of the engine's Bate-Mueller-White solver inside transferArc), then
+    forms v_inf as the magnitude of the transfer velocity minus the planet velocity
+    at each end, the same definition the engine uses. Returns (vInfDepart, vInfArrive)."""
+    v1, v2 = lambert_single(r1, r2, tof, mu, retrograde)
+    vinf_depart = float(np.linalg.norm(v1 - np.asarray(v_planet1, float)))
+    vinf_arrive = float(np.linalg.norm(v2 - np.asarray(v_planet2, float)))
+    return vinf_depart, vinf_arrive
 
 
 # --- Maneuvers ----------------------------------------------------------------

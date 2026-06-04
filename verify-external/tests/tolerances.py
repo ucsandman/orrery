@@ -93,6 +93,30 @@ def standish_pos_rtol(planet: str) -> float:
 
 
 # --- Patched-conic transfer, approximate model --------------------------------
+# transferArc (engine, Bate-Mueller-White heliocentric Lambert) vs an independent
+# hapsira izzo solve of the same arc, compared on the hyperbolic excess speed v_inf.
+# Held to the patched-conic published envelope (the model's stated accuracy), never
+# to machine precision, per the approximate-model rule. The real differential
+# agreement of the two exact Lambert solvers is far tighter and is recorded as the
+# bar-external current.
 PATCHED_CONIC_VINF_RTOL = (
     1e-3  # bar.json earthMarsVinfError target 1e-3, patched-conic published envelope
 )
+PATCHED_CONIC_VINF_ATOL = 1e-3  # m/s, floor for a v_inf that cancels toward zero
+
+# --- Horizons short-span two-body propagation, approximate model --------------
+# Engine propagateUniversal of a real Horizons heliocentric state, checked against
+# the real Horizons state a short time later (Oracle A, second check). Pure two-body
+# about the Sun neglects the planet's own GM and every third-body perturbation, so
+# the disagreement is the two-body model's short-span truncation, not engine error.
+# Measured worst over the committed 2, 10, 40 day spans: position 5.19e-6 relative
+# (Mars, 40 day span), velocity 1.82e-4 relative. The position error scales as the
+# span squared (measured 40d/2d ratio 462, the dt^2 signature of an acceleration-level
+# perturbation) and the velocity error linearly, confirming truncation rather than a
+# constant offset. The bounds are conservative ceilings above the measured worst with
+# headroom for perturber-geometry variation; they are an approximate-model envelope,
+# never tightened toward machine precision.
+SHORTSPAN_POS_RTOL = 2e-5  # two-body short-span truncation, measured worst 5.19e-6
+SHORTSPAN_POS_ATOL_KM = 1e-3  # km, small floor
+SHORTSPAN_VEL_RTOL = 1e-3  # two-body short-span truncation, measured worst 1.82e-4
+SHORTSPAN_VEL_ATOL_KMS = 1e-9  # km/s, small floor

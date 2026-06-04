@@ -2,6 +2,7 @@
  "category": "standish",
  "seed": 20260610,
  "profile": "nominal",
+ "round": 0,
  "count": 32,
  "cases": [
   {

@@ -7,3 +7,8 @@ __pycache__/
 
 # Run artifact: per-run measured maxima (the committed source of truth is bar-external.json)
 generated/measured.json
+
+# Break-push artifacts: per-round adversarial samples, overwritten each round and never
+# committed (the committed fixtures are the nominal sample; the break run is reproducible
+# from the seed and round offset in sample/emit.ts).
+generated/*.adversarial.json

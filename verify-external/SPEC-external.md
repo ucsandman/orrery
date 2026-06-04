@@ -150,7 +150,9 @@ maximum only from a real run, never fabricated.
 | `LAGRANGE_COLLINEAR_RESIDUAL_ATOL` | - | 1e-12 | dimensionless | bar.json collinearResidual 2.95e-14 (residual at the engine point) |
 | `STANDISH_POS_RTOL_TERRESTRIAL` | 1e-3 | 1e-5 (AU) | relative | Standish 1800-2050 terrestrial envelope, about 3.4 arcminutes of heliocentric angle (JPL approx-positions memo); conservative ceiling, target |
 | `STANDISH_POS_RTOL_GIANT` | 4e-3 | 1e-5 (AU) | relative | Standish 1800-2050 giant-planet envelope, about 13.8 arcminutes (the Jupiter-Saturn great inequality this low-precision set omits); conservative ceiling, target |
-| `PATCHED_CONIC_VINF_RTOL` | 1e-3 | 1e-3 (km/s) | dimensionless | bar.json earthMarsVinfError target 1e-3, patched-conic published envelope |
+| `PATCHED_CONIC_VINF_RTOL` | 1e-3 | `PATCHED_CONIC_VINF_ATOL` 1e-3 (m/s) | dimensionless | patched-conic published envelope (bar.json earthMarsVinfError target 1e-3); the transferArc-vs-hapsira-izzo differential agreement measured 5.97e-12, recorded as the current, held to the published envelope not to that precision |
+| `SHORTSPAN_POS_RTOL` | 2e-5 | 1e-3 (km) | relative | two-body short-span truncation envelope; measured worst 5.19e-6 (Mars, 40 day span), error scales as span^2 (measured 40d/2d ratio 462), conservative ceiling with perturber-geometry headroom |
+| `SHORTSPAN_VEL_RTOL` | 1e-3 | 1e-9 (km/s) | relative | two-body short-span truncation envelope; measured worst 1.82e-4 (40 day span), velocity error scales linearly in span, conservative ceiling |
 
 The Standish position envelope is per planet and relative (the displacement
 magnitude over the heliocentric distance), because the dominant model error is
@@ -182,6 +184,17 @@ Standish elements, which are referred to the J2000 ecliptic and are heliocentric
   as a documented, bounded offset and not corrected.
 - schema per record: `{ body, naif_id, jd_tdb, frame, origin, units, r_au[3],
   v_aupd[3], r_km[3], v_kms[3], source }`.
+
+The second Oracle A check (short-span two-body propagation) needs two real states
+close in time, which the 1800-2050 grid above does not provide, so it uses a
+separate committed fixture, `fixtures/horizons_shortspan.json`, fetched once by
+`fixtures/fetch_horizons_shortspan.py` in the same frame (heliocentric, ecliptic
+of J2000, geometric). For each of the eight barycenters it records a base state at
+a base epoch near J2000 and the true state 2, 10, and 40 days later. The spans are
+short on purpose: pure two-body motion neglects each planet's own gravitational
+parameter and every third-body perturbation, and the neglected term grows with the
+span, so a few days to a few tens of days keeps the comparison inside the two-body
+regime. The existing `horizons_planets.json` is never modified by this fetch.
 
 ## Planet element data provenance
 

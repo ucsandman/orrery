@@ -39,6 +39,67 @@ def test_lambert_single_rev_velocities():
     record("lambert", worst)
 
 
+def test_lambert_multi_rev_velocities():
+    """Engine multi-revolution branches (revs >= 1) vs hapsira izzo at the same
+    revolution count. Izzo's multi-rev problem has two solutions per revolution
+    count (a left and a right branch); the engine labels them rightBranch False/True
+    and hapsira labels them lowpath False/True. Physics does not fix that naming, so
+    each engine branch is required to match one of hapsira's two branches at its
+    revolution count, and the resolved label mapping is asserted to be consistent
+    (every engine rightBranch value maps to a single hapsira lowpath value)."""
+    doc = load_generated("lambert")
+    worst = 0.0
+    checked = 0
+    mapping = {}  # engine rightBranch -> hapsira lowpath that matched
+    for c in doc["cases"]:
+        inp, eng = c["input"], c["engineOutput"]
+        for b in eng["branches"]:
+            if b["revs"] < 1:
+                continue
+            best = None
+            best_lowpath = None
+            for lowpath in (True, False):
+                try:
+                    v1_ref, v2_ref = oracles.lambert_multi(
+                        inp["r1"],
+                        inp["r2"],
+                        inp["tof"],
+                        inp["mu"],
+                        inp["retrograde"],
+                        b["revs"],
+                        lowpath,
+                    )
+                except Exception:
+                    continue
+                if not (np.all(np.isfinite(v1_ref)) and np.all(np.isfinite(v2_ref))):
+                    continue
+                scale = max(np.linalg.norm(v1_ref), 1e-30)
+                rel = np.linalg.norm(np.array(b["v1"]) - v1_ref) / scale
+                if best is None or rel < best:
+                    best, best_lowpath = rel, lowpath
+                    best_v1, best_v2 = v1_ref, v2_ref
+            assert best is not None, ("no oracle multi-rev solution", inp, b["revs"])
+            worst = max(worst, best)
+            f1 = vec_close(
+                b["v1"], best_v1, rtol=T.LAMBERT_VEL_RTOL, atol=T.LAMBERT_VEL_ATOL
+            )
+            f2 = vec_close(
+                b["v2"], best_v2, rtol=T.LAMBERT_VEL_RTOL, atol=T.LAMBERT_VEL_ATOL
+            )
+            assert f1 is None, ("multi v1", inp, b["revs"], b["rightBranch"], f1)
+            assert f2 is None, ("multi v2", inp, b["revs"], b["rightBranch"], f2)
+            mapping.setdefault(b["rightBranch"], set()).add(best_lowpath)
+            checked += 1
+    record("lambert_multi", worst)
+    assert checked > 0, "no multi-revolution branches found to check"
+    # The engine-to-oracle branch label mapping must be one-to-one and consistent.
+    for right_branch, lowpaths in mapping.items():
+        assert len(lowpaths) == 1, (
+            f"engine rightBranch={right_branch} matched inconsistent hapsira "
+            f"lowpath values {lowpaths}; the branch convention is not stable"
+        )
+
+
 def test_lambert_endpoint_repropagation():
     """Engine v1 propagated by the library reaches the engine r2 (physics check).
 

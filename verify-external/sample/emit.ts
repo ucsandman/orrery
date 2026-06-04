@@ -20,13 +20,14 @@ import { dirname, join } from 'node:path'
 
 import {
   createRng, type Rng,
-  type Vec3, vec3,
-  TWO_PI, MU_EARTH, MU_SUN,
+  type Vec3, vec3, cross, norm,
+  TWO_PI, MU_EARTH, MU_SUN, AU_M,
   coeToRv, rvToElements,
   propagateUniversal,
   lambertIzzo,
   hohmann, biElliptic, planeChange, combinedPlaneChange,
   lagrangePoints,
+  transferArc,
   planetStateAtJD, standishEphemeris, STANDISH_EARTH, STANDISH_MARS,
   type PlanetElements, type BodyState,
   AU_KM_CURTIS,
@@ -66,7 +67,7 @@ function sampleOrbit(rng: Rng, adversarial: boolean): {
   a: number; e: number; i: number; raan: number; argp: number; nu: number; mu: number
 } {
   const mu = MU_EARTH
-  const a = logRand(rng, 8e6, 5e8)
+  let a = logRand(rng, 8e6, 5e8)
   let e: number
   if (adversarial) {
     // Straddle near-circular and near-parabolic and into the hyperbolic regime.
@@ -79,7 +80,19 @@ function sampleOrbit(rng: Rng, adversarial: boolean): {
   const i = rand(rng, 0.02, Math.PI - 0.02)
   const raan = rand(rng, 0, TWO_PI)
   const argp = rand(rng, 0, TWO_PI)
-  const nu = rand(rng, 0, TWO_PI)
+  // For a hyperbola the semi-major axis is negative by convention, so the semi-latus
+  // rectum p = a (1 - e^2) stays positive (coeToRv's contract), and the true anomaly
+  // must lie inside the asymptote |nu| < acos(-1/e) so the state is on the real branch
+  // (r = p / (1 + e cos nu) > 0). The draw order is unchanged from the ellipse path so
+  // the committed nominal fixtures (e < 1 always) stay byte-identical.
+  let nu: number
+  if (e >= 1) {
+    a = -a
+    const nuMax = Math.acos(-1 / e) - 0.05
+    nu = rand(rng, -nuMax, nuMax)
+  } else {
+    nu = rand(rng, 0, TWO_PI)
+  }
   return { a, e, i, raan, argp, nu, mu }
 }
 
@@ -127,10 +140,16 @@ function genLambert(rng: Rng, n: number, adversarial: boolean): Case[] {
     const o = sampleOrbit(rng, false) // bound orbit so the transfer is feasible
     const { r, v } = coeToRv(o.a, o.e, o.i, o.raan, o.argp, o.nu, o.mu)
     const P = period(o.a, o.mu)
-    const dt = (adversarial ? rand(rng, 0.6, 0.95) : rand(rng, 0.05, 0.6)) * P
+    // Half the nominal cases use a flight time spanning more than one period so the
+    // multi-revolution branches are populated and checked (SPEC: single- and
+    // multi-revolution). The other half stay single-revolution (short flight).
+    const multi = k % 2 === 1
+    const maxRevs = adversarial || multi ? 2 : 0
+    const dt = multi
+      ? rand(rng, 1.15, 2.85) * P
+      : (adversarial ? rand(rng, 0.6, 0.95) : rand(rng, 0.05, 0.6)) * P
     const s2 = propagateUniversal(r, v, dt, o.mu)
     const retrograde = adversarial ? rng.next() < 0.5 : false
-    const maxRevs = adversarial ? 2 : 0
     const branches = lambertIzzo(r, s2.r, dt, o.mu, { retrograde, maxRevs })
     cases.push({
       input: { r1: arr(r), r2: arr(s2.r), tof: dt, mu: o.mu, retrograde, maxRevs },
@@ -188,6 +207,65 @@ function genLagrange(rng: Rng, n: number, adversarial: boolean): Case[] {
   return cases
 }
 
+function genPatchedConic(rng: Rng, n: number, adversarial: boolean): Case[] {
+  const cases: Case[] = []
+  const mu = MU_SUN
+  for (let k = 0; k < n; k++) {
+    // Two distinct heliocentric orbits (a departure planet and an arrival planet),
+    // so the transfer velocities differ from the planet velocities and the
+    // hyperbolic excess speed v_inf is non-trivial (not an atol-dominated zero).
+    const a1 = AU_M * logRand(rng, 0.5, 1.8)
+    const a2 = AU_M * logRand(rng, 1.1, 6.0)
+    const eMax = adversarial ? 0.4 : 0.2
+    const e1 = rand(rng, 0, eMax)
+    const e2 = rand(rng, 0, eMax)
+    const dep = coeToRv(a1, e1, rand(rng, 0, 0.3), rand(rng, 0, TWO_PI), rand(rng, 0, TWO_PI), rand(rng, 0, TWO_PI), mu)
+    const arrv = coeToRv(a2, e2, rand(rng, 0, 0.3), rand(rng, 0, TWO_PI), rand(rng, 0, TWO_PI), rand(rng, 0, TWO_PI), mu)
+    const sinAngle = norm(cross(dep.r, arrv.r)) / (norm(dep.r) * norm(arrv.r))
+    if (sinAngle < 1e-3) continue // collinear: Lambert plane undefined, skip
+    const aT = (norm(dep.r) + norm(arrv.r)) / 2
+    const tof = rand(rng, 0.3, 0.9) * period(aT, mu)
+    const t = transferArc(dep.r, dep.v, arrv.r, arrv.v, tof, mu)
+    cases.push({
+      input: { r1: arr(dep.r), vPlanet1: arr(dep.v), r2: arr(arrv.r), vPlanet2: arr(arrv.v), tof, mu },
+      engineOutput: {
+        vDepart: arr(t.vDepart), vArrive: arr(t.vArrive),
+        vInfDepart: t.vInfDepart, vInfArrive: t.vInfArrive,
+      },
+    })
+  }
+  return cases
+}
+
+interface ShortSpanPair {
+  body: string
+  span_days: number
+  span_seconds: number
+  r0_km: [number, number, number]
+  v0_kms: [number, number, number]
+}
+
+function genShortSpan(): Case[] {
+  const fixtureFile = join(FIXTURES, 'horizons_shortspan.json')
+  if (!existsSync(fixtureFile)) {
+    return [] // short-span fixtures not fetched yet; keep emit:all runnable
+  }
+  const doc = JSON.parse(readFileSync(fixtureFile, 'utf8')) as { pairs: ShortSpanPair[] }
+  const cases: Case[] = []
+  for (const p of doc.pairs) {
+    const r0 = vec3(p.r0_km[0], p.r0_km[1], p.r0_km[2])
+    const v0 = vec3(p.v0_kms[0], p.v0_kms[1], p.v0_kms[2])
+    // Engine two-body propagation in the Standish (Curtis) km, km/s, km^3/s^2 unit
+    // system, the same MU_SUN as the Standish ephemeris emit uses.
+    const out = propagateUniversal(r0, v0, p.span_seconds, MU_SUN_KM)
+    cases.push({
+      input: { body: p.body, spanDays: p.span_days, spanSeconds: p.span_seconds },
+      engineOutput: { r_km: arr(out.r), v_kms: arr(out.v) },
+    })
+  }
+  return cases
+}
+
 interface PlanetTable { [body: string]: PlanetElements }
 interface HorizonsRecord { body: string; jd_tdb: number }
 
@@ -238,29 +316,37 @@ const GENERATORS: Record<Category, (rng: Rng, n: number, adv: boolean) => Case[]
   lambert: genLambert,
   maneuvers: genManeuvers,
   lagrange: genLagrange,
+  patchedconic: genPatchedConic,
   standish: () => genStandish(),
+  shortspan: () => genShortSpan(),
 }
 
-function emitCategory(category: Category, profile: Profile): void {
-  const seed = SEEDS[category]
+function emitCategory(category: Category, profile: Profile, round: number): void {
+  const baseSeed = SEEDS[category]
   const adversarial = profile === 'adversarial'
+  // Each adversarial break-push round shifts the seed so it draws a distinct sample;
+  // the nominal profile always uses the base seed for a reproducible committed fixture.
+  const seed = adversarial ? baseSeed + round * 100003 : baseSeed
   const n = adversarial ? SAMPLE_SIZE_ADVERSARIAL : SAMPLE_SIZE_NOMINAL
   const rng = createRng(seed)
   const cases = GENERATORS[category](rng, n, adversarial)
-  const doc = { category, seed, profile, count: cases.length, cases }
-  const out = join(GENERATED, `${category}.${seed}.${profile}.json`)
+  const doc = { category, seed, profile, round, count: cases.length, cases }
+  // The filename keys on the base seed so the Python glob finds it regardless of round;
+  // each adversarial round overwrites the prior round's file (run, test, next round).
+  const out = join(GENERATED, `${category}.${baseSeed}.${profile}.json`)
   writeFileSync(out, JSON.stringify(doc, null, 1))
-  console.log(`emit ${category} ${profile}: ${cases.length} cases -> ${out}`)
+  console.log(`emit ${category} ${profile} round ${round} (seed ${seed}): ${cases.length} cases -> ${out}`)
 }
 
 function main(): void {
   const target = process.argv[2] ?? 'all'
   const profile = (process.argv[3] as Profile) ?? 'nominal'
+  const round = Number.parseInt(process.argv[4] ?? '0', 10)
   const categories = Object.keys(SEEDS) as Category[]
   if (target === 'all') {
-    for (const c of categories) emitCategory(c, profile)
+    for (const c of categories) emitCategory(c, profile, round)
   } else if (categories.includes(target as Category)) {
-    emitCategory(target as Category, profile)
+    emitCategory(target as Category, profile, round)
   } else {
     console.error(`unknown category ${target}; expected one of ${categories.join(', ')} or all`)
     process.exit(2)

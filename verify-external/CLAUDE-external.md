@@ -83,7 +83,19 @@ verify-external/.venv/Scripts/python.exe verify-external/fixtures/fetch_horizons
 # offline differential run (emit engine outputs, then check against oracles):
 npm --prefix verify-external run emit:all
 verify-external/.venv/Scripts/python.exe -m pytest verify-external/tests -q
+
+# one break push (round N draws a distinct adversarial sample via the seed offset):
+npm --prefix verify-external run emit:all -- adversarial N
+ORRERY_PROFILE=adversarial verify-external/.venv/Scripts/python.exe -m pytest verify-external/tests -q
 ```
+
+The break push runs the same test bodies against the adversarial sample
+(`ORRERY_PROFILE=adversarial` switches `load_generated` to the `*.adversarial.json`
+files). Its artifacts are gitignored; the committed fixtures stay the nominal
+sample. A disagreement above tolerance is either a real engine finding filed as a
+failing test or an explained oracle-domain limit (for example hapsira `danby` is an
+elliptic-and-parabolic solver, so the hyperbolic Kepler oracle is the robust
+all-conic `farnocchia`).
 
 ## Turn close protocol
 

@@ -51,6 +51,31 @@ A few headline numbers, measured by `npm test`, are tracked with their targets i
 solutions re-propagate to about 4e-12 (target 1e-9), an equal-mass binary
 conserves momentum to exactly zero, and record then replay is byte-identical.
 
+### External validation
+
+Internal checks compare the engine to itself and to transcribed numbers.
+`verify-external/` adds a second, independent posture: it cross-checks the
+unmodified engine against truth the original build did not author. Two oracle
+classes are used, offline, from committed fixtures after a one-time fetch:
+
+- Oracle A, real ephemerides: the Standish planetary model and short-span two-body
+  propagation are checked against real JPL Horizons state vectors for all eight
+  planets.
+- Oracle B, an independent library: classical elements, Kepler propagation, Lambert
+  (single and multi-revolution), maneuvers, the patched-conic transfer, and the
+  Lagrange points are recomputed by hapsira 0.18.0 (the maintained poliastro fork),
+  with scipy and cited closed forms where hapsira has no equivalent.
+
+The engine emits seeded JSON; a Python pytest suite recomputes each case with the
+oracle and asserts agreement within named, sourced tolerances. Every exact method
+agrees far inside its bound (Kepler to 2.9e-13, Lambert to 1.9e-14, the
+patched-conic hyperbolic excess speed to 6.0e-12, the Lagrange points to 1.9e-12),
+each approximate model sits inside its published envelope (the Standish ephemeris
+within its 1800-2050 accuracy class against Horizons, short-span two-body within
+the two-body truncation envelope), and three consecutive adversarial break pushes
+find zero unexplained disagreements. The contract is `verify-external/SPEC-external.md`
+and the ratchet is `verify-external/bar-external.json`.
+
 ## Quick start
 
 ```

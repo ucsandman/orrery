@@ -8,9 +8,8 @@
  * calls. Each emitted JSON copies its seed so the fixture is self-describing.
  */
 
-/** Per-category nominal sample size. The bar-external target is 1024; this is the
- *  committed baseline count, raised toward the target as the suite matures. */
-export const SAMPLE_SIZE_NOMINAL = 256
+/** Per-category nominal sample size, at the bar-external target of 1024. */
+export const SAMPLE_SIZE_NOMINAL = 1024
 
 /** Per-category adversarial (break-push) sample size. */
 export const SAMPLE_SIZE_ADVERSARIAL = 128
@@ -24,6 +23,8 @@ export const SEEDS = {
   maneuvers: 20260608,
   lagrange: 20260609,
   standish: 20260610,
+  patchedconic: 20260611,
+  shortspan: 20260612,
 } as const
 
 export type Category = keyof typeof SEEDS

@@ -14,58 +14,67 @@
       "note": "planetStateAtJD (Curtis Algorithm 8.1) vs committed Horizons heliocentric ecliptic J2000 geometric vectors. Approximate model: held to its published envelope, never to engine precision. current 3.27e-3 is Saturn (the Jupiter-Saturn great inequality this low-precision set omits), within the 4e-3 giant tier. Earth and Mars (anchored to the core constants) worst is 3.37e-4, within the 1e-3 terrestrial tier. The exact per-planet published arcsecond figures are pending source re-verification; the two tiers are conservative ceilings labeled as such."
     },
     "elementsVsLibrary": {
-      "current": 5.48e-14,
+      "current": 8.80e-14,
       "target": 1e-11,
       "direction": "down",
       "unit": "relative (state vector and classical elements)",
       "status": "green",
       "source": "bar.json keplerRoundTripError 8.7e-14 internal envelope + hapsira rv2coe/coe2rv float ordering; ELEMENTS_FWD_RTOL / ELEMENTS_INV_RTOL",
-      "note": "rvToElements and coeToRv vs hapsira rv2coe and coe2rv on the same SI input. Forward worst 1.15e-14, inverse worst 5.48e-14."
+      "note": "rvToElements and coeToRv vs hapsira rv2coe and coe2rv on the same SI input, 1024 cases per direction. Forward worst 2.13e-14, inverse worst 8.80e-14."
     },
     "keplerVsLibrary": {
-      "current": 2.17e-14,
+      "current": 2.89e-13,
       "target": 1e-9,
       "direction": "down",
       "unit": "relative (state vector), atol 1e-3 m / 1e-6 m/s",
       "status": "green",
       "source": "bar.json universalVsRegimeError 7.0e-14 internal envelope + hapsira danby cutoff; KEPLER_RTOL",
-      "note": "propagateUniversal vs hapsira danby (converged to 1e-13) on the same input. Worst 2.17e-14."
+      "note": "propagateUniversal vs hapsira danby (converged to 1e-13) on the same input, 1024 cases. Worst 2.89e-13."
     },
     "lambertVsLibrary": {
-      "current": 2.18e-15,
+      "current": 1.92e-14,
       "target": 1e-8,
       "direction": "down",
       "unit": "relative (velocity vectors), atol 1e-6 m/s",
       "status": "green",
       "source": "bar.json lambertIzzoVsBmwError 4.4e-13 internal envelope + third-library Izzo cutoff; LAMBERT_VEL_RTOL",
-      "note": "lambertIzzo single-revolution vs hapsira core izzo. Worst 2.18e-15. The cross-propagator endpoint re-propagation (engine v1 through hapsira farnocchia reaching r2) worst is 1.59e-9 within LAMBERT_ENDPOINT_RTOL 1e-7. Multi-revolution branch matching is the next build push."
+      "note": "lambertIzzo vs hapsira core izzo, 1024 cases. Single-revolution worst 1.92e-14; multi-revolution (revs 1 and 2, both branches per revolution count, engine rightBranch mapped to hapsira lowpath) worst 1.04e-14. The cross-propagator endpoint re-propagation (engine v1 through hapsira farnocchia reaching r2) worst is 6.53e-10 within LAMBERT_ENDPOINT_RTOL 1e-7."
     },
     "maneuversVsLibrary": {
-      "current": 1.73e-15,
+      "current": 4.62e-15,
       "target": 1e-10,
       "direction": "down",
       "unit": "relative (delta-v), atol 1e-6 m/s",
       "status": "green",
       "source": "hapsira Maneuver (hohmann, bielliptic) and cited closed forms (plane change, combined); correctly-rounded arithmetic; MANEUVER_DV_RTOL",
-      "note": "hohmann and biElliptic vs hapsira.core.maneuver; planeChange and combinedPlaneChange vs the cited closed form. Worst total-delta-v agreement 1.73e-15."
+      "note": "hohmann and biElliptic vs hapsira.core.maneuver; planeChange and combinedPlaneChange vs the cited closed form, 1024 cases. Worst total-delta-v agreement 4.62e-15."
     },
     "lagrangeVsLibrary": {
-      "current": 1.42e-12,
+      "current": 1.89e-12,
       "target": 1e-10,
       "direction": "down",
       "unit": "relative (L1..L5 positions)",
       "status": "green",
       "source": "bar.json lagrangeL4L5Error 4.7e-16 and collinearResidual 2.95e-14 + scipy brentq and hapsira mapping headroom; LAGRANGE_COLLINEAR_RTOL / LAGRANGE_EQUILATERAL_RTOL",
-      "note": "lagrangePoints vs hapsira.threebody.restricted.lagrange_points (worst 1.42e-12), an independent scipy.optimize.brentq collinear root (worst 2.77e-14), and the exact equilateral closed form for L4/L5 (worst 0.0). The |dOmega/dx| residual at the engine collinear points stays under LAGRANGE_COLLINEAR_RESIDUAL_ATOL 1e-12."
+      "note": "lagrangePoints vs hapsira.threebody.restricted.lagrange_points (worst 1.89e-12), an independent scipy.optimize.brentq collinear root (worst 2.89e-14), and the exact equilateral closed form for L4/L5 (worst 0.0), 1024 cases. The |dOmega/dx| residual at the engine collinear points stays under LAGRANGE_COLLINEAR_RESIDUAL_ATOL 1e-12."
     },
     "patchedConicVsReference": {
-      "current": null,
+      "current": 5.97e-12,
       "target": 1e-3,
       "direction": "down",
       "unit": "relative (hyperbolic excess speed)",
-      "status": "pending",
-      "source": "bar.json earthMarsVinfError target 1e-3 (internal current 4.2e-6 vs Curtis Example 8.8); PATCHED_CONIC_VINF_RTOL",
-      "note": "Not yet wired in the baseline. Approximate model: to be held to the patched-conic published envelope 1e-3, not to the internal 4.2e-6. The next build push wires transferArc against an independent heliocentric Lambert oracle."
+      "status": "green",
+      "source": "patched-conic published envelope PATCHED_CONIC_VINF_RTOL 1e-3 (bar.json earthMarsVinfError target 1e-3); the recorded current is the differential agreement of two exact Lambert solvers, far inside that envelope",
+      "note": "transferArc (engine Bate-Mueller-White heliocentric Lambert arc) vs an independent hapsira izzo solve of the same arc, compared on the departure and arrival hyperbolic excess speed v_inf, 1024 cases. Worst 5.97e-12. Held to the approximate patched-conic published envelope 1e-3, never to machine precision; the tight 5.97e-12 current is the two exact solvers agreeing, not the model-vs-reality accuracy."
+    },
+    "shortspanVsHorizons": {
+      "current": 5.19e-6,
+      "target": 2e-5,
+      "direction": "down",
+      "unit": "relative (max heliocentric position error of short-span two-body propagation)",
+      "status": "green",
+      "source": "two-body short-span truncation envelope SHORTSPAN_POS_RTOL 2e-5 (and SHORTSPAN_VEL_RTOL 1e-3 for velocity); committed fixtures/horizons_shortspan.json",
+      "note": "Oracle A second check: propagateUniversal of a real Horizons heliocentric state (km, km/s, MU_SUN) against the real Horizons state 2, 10, or 40 days later. Worst position 5.19e-6 relative (Mars, 40 day span), worst velocity 1.82e-4 relative. Pure two-body neglects each planet's own GM and all third-body perturbation; the disagreement is the two-body model truncation, which scales as span^2 in position (measured 40d/2d ratio 462) and linearly in velocity, never tightened to engine precision."
     }
   },
   "coverage": {
@@ -76,16 +85,16 @@
       "unit": "count (committed Horizons planet bodies, one or more epochs each)",
       "status": "green",
       "source": "all eight major planet-system barycenters covered by committed JPL Horizons fixtures and the data/standish_all_planets.json element tables",
-      "note": "Eight bodies (barycenters 1 through 8) at four epochs each, 32 records, committed in fixtures/horizons_planets.json. Earth and Mars also anchor to the in-core STANDISH_EARTH/STANDISH_MARS; the other six come from the cited data file fed to the unmodified planetStateAtJD."
+      "note": "Eight bodies (barycenters 1 through 8) at four epochs each, 32 records, committed in fixtures/horizons_planets.json for the Standish check. The Oracle A short-span check adds fixtures/horizons_shortspan.json, the same eight bodies at three short spans each (24 state pairs). Earth and Mars also anchor to the in-core STANDISH_EARTH/STANDISH_MARS; the other six come from the cited data file fed to the unmodified planetStateAtJD."
     },
     "sampleSize": {
-      "current": 256,
+      "current": 1024,
       "target": 1024,
       "direction": "up",
       "unit": "count (nominal seeded cases per analytic category)",
-      "status": "pending",
+      "status": "green",
       "source": "SAMPLE_SIZE_NOMINAL in verify-external/sample/seeds.ts",
-      "note": "256 nominal cases per analytic category at baseline, raised toward 1024 as the suite matures. The adversarial profile adds 128 concentrated break-push cases per category and is wired but not yet committed as a separate run."
+      "note": "1024 nominal cases per analytic category (elements forward and inverse, kepler, lambert, maneuvers, lagrange, patchedconic). The fixture-bound categories stay fixture-sized (standish 32 records, shortspan 24 pairs). The adversarial profile adds 128 concentrated break-push cases per analytic category for the break runs."
     },
     "unexplainedDisagreements": {
       "current": 0,
@@ -94,7 +103,7 @@
       "unit": "count",
       "status": "green",
       "source": "verification rule: every cross-implementation disagreement above tolerance is either a filed failing test (a counterexample) or an explained, cited model-accuracy gap",
-      "note": "The committed run (11 tests) passes with zero disagreements above tolerance. The one approximate-model gap that the layer surfaced (Saturn at 3.27e-3 against the inner-planet envelope) is explained by and held to the giant-planet published envelope, not unexplained."
+      "note": "The committed nominal run (14 tests, 1024 cases per analytic category) passes with zero disagreements above tolerance, and three consecutive break pushes on distinct adversarial samples (seed-offset rounds 1, 2, 3) each pass 14/14 with zero new unexplained disagreements. The adversarial survey surfaced one cross-implementation disagreement (hyperbolic Kepler), explained as an oracle-domain limit: hapsira danby solves the elliptic and parabolic Kepler equation only and wraps the hyperbolic mean anomaly mod 2pi, so the hyperbolic oracle is the robust all-conic farnocchia, which confirms the engine to 1e-13. The two approximate-model gaps are explained, not unexplained: Saturn 3.27e-3 against the giant-planet Standish envelope, and the short-span two-body position error 5.19e-6 against the two-body truncation envelope (it scales as span^2, the perturbation signature)."
     }
   }
 }
