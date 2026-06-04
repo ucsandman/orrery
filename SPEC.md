@@ -398,7 +398,7 @@ textbook's own values when reproducing that textbook's worked example.
 | Earth-Mars excess speeds | 3.1651 and 2.8851 | km/s | Curtis Example 8.8 | yes |
 | Earth-Mars departure delta-v | 3.674 | km/s | Curtis Example 8.9 | yes |
 | Bi-elliptic crossover | 11.94 and 15.58 | dimensionless | Curtis, Vallado | yes |
-| PEFRL coefficients | xi 0.1786178958448091, lambda -0.2123418310626054, chi -0.6626458266981849 | dimensionless | Omelyan-Mryglod-Folk 2002 | yes |
+| PEFRL coefficients | xi 0.1786178958448091, lambda -0.2123418310626054, chi -0.06626458266981849 | dimensionless | Omelyan-Mryglod-Folk 2002 | yes |
 | Forest-Ruth coefficients | w1 1.3512071919596578, w0 -1.7024143839193153 | dimensionless | Forest and Ruth 1990 | yes |
 
 ## Open questions

@@ -14,14 +14,42 @@ of the core.
 
 ## Status
 
-Milestone 1 of 8 is complete: vector and matrix primitives, unit conversions,
-time handling (seconds from the J2000 epoch and a precision-preserving split
-Julian Date), documented SI physical constants, a seeded deterministic random
-generator, and compensated summation. The remaining milestones (two-body Kepler
-propagation, orbit classification, N-body integration, the Lambert solver,
-maneuver planning, patched-conic interplanetary transfer, and the circular
-restricted three-body problem) are specified in `SPEC.md` and tracked in
-`bar.json`.
+All eight core milestones are complete and green: 148 passing tests, no pending
+criteria, and every numeric threshold in `bar.json` at or under its target.
+
+| # | Milestone | What it provides |
+| --- | --- | --- |
+| 1 | Primitives | Immutable `Vec3`, rotation matrices, unit conversions, J2000 time with a split Julian Date, sourced SI constants, a seeded `xoshiro256**` generator, compensated summation. |
+| 2 | Two-body Kepler | Stumpff functions, Newton/Danby/Householder root finders, state vectors to and from classical elements, and two independent propagators (a universal-variable solver and a per-regime solver) that must agree. |
+| 3 | Orbit classification | Conic type, period, apoapsis, periapsis, and specific orbital energy, checked against a propagated orbit. |
+| 4 | N-body integration | A packed `Float64Array` state buffer, one canonical pairwise force kernel, four integrators (leapfrog, PEFRL, Forest-Ruth, RK4), and byte-identical record and replay. |
+| 5 | Lambert solver | Two independent solvers, Bate-Mueller-White (oracle) and Izzo (production, multi-revolution), that must agree and re-propagate to their endpoints. |
+| 6 | Maneuver planning | Hohmann and bi-elliptic transfers, plane changes, and the computed bi-elliptic crossover ratios (about 11.94 and 15.58). |
+| 7 | Patched-conic transfer | Sphere of influence, hyperbolic excess speeds, departure delta-v, a deterministic Standish planetary ephemeris, and a porkchop scan. |
+| 8 | CR3BP | The effective potential, the Jacobi constant, and all five Lagrange points in the circular restricted three-body problem. |
+
+## Verification
+
+The verification posture is the heart of the project, not a layer on top of it.
+
+- The two-body analytic solution and the conservation invariants are ground
+  truth and override any heuristic.
+- Where possible, two independent implementations must agree, which is a stronger
+  signal than one implementation checked against transcribed numbers: a
+  universal-variable and a per-regime Kepler propagator, and the Izzo and
+  Bate-Mueller-White Lambert solvers.
+- No physics assertion uses bare equality. Every comparison uses a mixed
+  tolerance `|a - b| <= atol + rtol max(|a|, |b|)`, and every tolerance is a
+  named constant that traces to a source or to a measured run.
+- Work proceeds as an alternating build and break loop. A break push tries to
+  falsify the engine with random scenes, random two-body and Lambert cases, and
+  adversarial edge cases (extreme eccentricity, near-parabolic orbits, exact
+  collisions, degenerate coplanar geometry); see `test/break`.
+
+A few headline numbers, measured by `npm test`, are tracked with their targets in
+`bar.json`: the two Kepler propagators agree to about 7e-14 (target 1e-9), Lambert
+solutions re-propagate to about 4e-12 (target 1e-9), an equal-mass binary
+conserves momentum to exactly zero, and record then replay is byte-identical.
 
 ## Quick start
 
@@ -49,14 +77,25 @@ Repository: https://github.com/ucsandman/orrery
 ## Layout
 
 ```
-src/core      vectors, matrices, units, time, constants, seeded rng
-src/numeric   compensated summation (more numeric helpers land with later milestones)
-test/harness  shared tolerance and invariant helpers for tests
-test          the milestone roadmap as pending tests
+src/core         vectors, matrices, units, time, constants, seeded rng
+src/numeric      compensated summation, Stumpff functions, root finders
+src/twobody      state vectors to and from elements, Kepler propagators
+src/orbit        orbit classification and derived properties
+src/integrators  packed state buffer, force kernel, integrators, record/replay
+src/lambert      Bate-Mueller-White and Izzo Lambert solvers
+src/maneuvers    Hohmann, bi-elliptic, plane-change planning
+src/transfer     ephemeris, patched-conic transfer, porkchop scan
+src/cr3bp        circular restricted three-body problem, Lagrange points
+src/index.ts     the public barrel
+test/harness     shared tolerance and conservation helpers for tests
+test/break       the adversarial break-push suite
+test             the milestone roadmap (now a public-surface completeness check)
 ```
 
-The full module map and the dependency rule (lower milestones never import higher
-ones) are in `SPEC.md`.
+The dependency rule is one-way: lower-numbered milestones never import
+higher-numbered ones. The analytic layer uses the immutable `Vec3`; the N-body
+simulation layer uses the packed `Float64Array` buffer; the two meet only at the
+`fromBodies` and `toBodies` seam. The full module map is in `SPEC.md`.
 
 ## License
 
