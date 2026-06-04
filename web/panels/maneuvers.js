@@ -19,16 +19,27 @@
     setup({ controls, vp }) {
       const mu = O.MU_EARTH
       const st = { r1: 7000, r2: 105000, rb: 400000, show: 'both' }
+      let af = 0 // animation fraction along the flown transfer
+      let pathPts = []
 
       const g = UI.section(controls, 'Orbits (km)')
       UI.slider(g, { label: 'start radius r₁', min: 6600, max: 30000, step: 100, value: st.r1, fmt: (v) => UI.fmt.num(v, 0) }, (v) => { st.r1 = v; render() })
       UI.slider(g, { label: 'target radius r₂', min: 8000, max: 420000, step: 500, value: st.r2, fmt: (v) => UI.fmt.num(v, 0) }, (v) => { st.r2 = v; render() })
       UI.slider(g, { label: 'bi-elliptic apoapsis r_b', min: 50000, max: 1200000, step: 1000, value: st.rb, fmt: (v) => UI.fmt.num(v, 0) }, (v) => { st.rb = v; render() })
-      UI.select(UI.section(controls, 'Show'), { label: 'transfer', options: [
+      const showSec = UI.section(controls, 'Show')
+      UI.select(showSec, { label: 'transfer', options: [
         { label: 'Both', value: 'both' }, { label: 'Hohmann only', value: 'hohmann' }, { label: 'Bi-elliptic only', value: 'biell' },
-      ] }, (v) => { st.show = v; render() })
+      ] }, (v) => { st.show = v; vp.resetView(); render() }) // reframe cleanly (extent changes with r_b)
+      const anim = UI.loop((dt) => { af = (af + dt / 6) % 1; render() }, vp.canvas) // fly the transfer in ~6 s
+      UI.playButton(showSec, anim)
 
       const out = UI.readout(UI.section(controls, 'Δv budget'))
+
+      // Real propagated transfer path (equal-time samples) for the flying rocket.
+      const periSpeed = (peri, apo) => { const a = (peri + apo) / 2; return Math.sqrt(mu * (2 / peri - 1 / a)) }
+      const apoSpeed = (peri, apo) => { const a = (peri + apo) / 2; return Math.sqrt(mu * (2 / apo - 1 / a)) }
+      const halfP = (peri, apo) => { const a = (peri + apo) / 2; return Math.PI * Math.sqrt((a * a * a) / mu) }
+      const sampleArc = (r0, v0, T, n) => { const o = []; for (let k = 0; k <= n; k++) { const s = O.propagateUniversal(r0, v0, (k / n) * T, mu); o.push([s.r.x, s.r.y]) } return o }
 
       // Ellipse with the focus at the origin and periapsis on +x, sampled over [t0,t1].
       function ellipse(periM, apoM, t0, t1, n) {
@@ -68,6 +79,18 @@
           vp.poly(ellipse(r1, rb, 0, Math.PI, 200), { stroke: '#ffcf6b', width: 1.8, dash: [6, 4] })
           vp.poly(ellipse(r2, rb, Math.PI, UI.TAU, 200), { stroke: '#ffcf6b', width: 1.8, dash: [6, 4] })
         }
+
+        // The rocket flies the transfer that is shown (bi-elliptic when it is the only one).
+        if (showB && !showH) {
+          const leg1 = sampleArc(O.vec3(r1, 0, 0), O.vec3(0, periSpeed(r1, rb), 0), halfP(r1, rb), 150)
+          const leg2 = sampleArc(O.vec3(-rb, 0, 0), O.vec3(0, -apoSpeed(r2, rb), 0), halfP(r2, rb), 150)
+          pathPts = leg1.concat(leg2.slice(1)) // drop the duplicated apoapsis point so the heading stays smooth
+        } else {
+          pathPts = sampleArc(O.vec3(r1, 0, 0), O.vec3(0, periSpeed(r1, r2), 0), halfP(r1, r2), 220)
+        }
+        const idx = Math.min(pathPts.length - 2, Math.max(0, Math.floor(af * (pathPts.length - 1))))
+        const a0 = pathPts[idx], a1 = pathPts[idx + 1]
+        vp.rocket(a0[0], a0[1], Math.atan2(a1[1] - a0[1], a1[0] - a0[0]), 7, '#e8eef8', anim.playing)
 
         const R = r2 / r1
         out.set('radius ratio r₂/r₁', R.toFixed(2))

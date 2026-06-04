@@ -21,23 +21,34 @@ from `file://` URLs. If yours does not, you can also just open `web/index.html`
 directly. The committed bundle means a fresh clone works without the build step;
 rebuild it whenever the core changes.
 
+## Controls
+
+Every panel shares the same view controls: scroll to zoom (toward the cursor),
+drag to pan, and double-click to reset the view. Every tab has a Play button that
+animates something, and the moving spacecraft is drawn as a little rocket that
+points along its velocity.
+
 ## The five panels
 
 - **Orbit Designer** sets the six classical elements of an Earth orbit, draws it,
-  and uses `propagateUniversal` to move a body along it at the real, varying Kepler
+  and flies a rocket along it with `propagateUniversal` at the real, varying Kepler
   speed (fast at periapsis, slow at apoapsis). The readout is straight from
   `classify`.
 - **Lambert Transfer** connects two heliocentric orbits in a chosen flight time
-  with `lambertIzzo`, draws the propagated transfer arc, and reports the departure
-  and arrival burns. Long flight times unlock multi-revolution solutions.
+  with `lambertIzzo`, flies the rocket along the propagated transfer arc, and
+  reports the departure and arrival burns. Long flight times unlock multi-revolution
+  solutions.
 - **Maneuvers** compares the Hohmann and bi-elliptic transfers from `hohmann` and
   `biElliptic`, with the burn breakdown and the `recommendTransfer` verdict (which
-  flips to bi-elliptic past a radius ratio of about 11.94).
+  flips to bi-elliptic past a radius ratio of about 11.94). Play flies the rocket
+  along the shown transfer.
 - **Solar System** animates the eight planets from `planetStateAtJD` over any date
   between 1900 and 2050.
 - **Lagrange Points** plots the five equilibria from `lagrangePoints` over a
   heatmap of the core's `effectivePotential`, for the Earth-Moon and Sun-Earth
-  systems or a custom mass ratio.
+  systems or a custom mass ratio. Play releases a probe and integrates its real
+  motion with `propagateRotating`: it librates near L4/L5 (a tadpole orbit) or
+  drifts away from the unstable L1.
 
 ## Files
 

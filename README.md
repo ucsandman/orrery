@@ -98,8 +98,9 @@ To see and use the engine, there is a zero-install browser playground in `web/`.
 loads the real compiled core and gives you interactive panels: design an orbit and
 watch a body move along it at the true Kepler speed, plan a Lambert transfer and read
 off its burns, compare Hohmann against bi-elliptic, animate the planets over any
-date, and explore the Lagrange points over the effective-potential field. Every
-number and curve is computed live by the core.
+date, and release a probe near a Lagrange point to watch it librate or drift. Every
+number and curve is computed live by the core. Every panel has a Play button and a
+little rocket that flies the trajectory; scroll to zoom, drag to pan.
 
 ```
 npm install

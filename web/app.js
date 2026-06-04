@@ -109,6 +109,40 @@
     return body
   }
 
+  /** A requestAnimationFrame loop. onFrame(dtSeconds) runs each frame while playing.
+   *  A generation token guarantees only one loop runs even across fast Play/Pause. */
+  function loop(onFrame, watchEl) {
+    let playing = false, last = 0, gen = 0
+    function start() {
+      const myGen = ++gen
+      last = 0
+      const tick = (ts) => {
+        if (!playing || myGen !== gen) return
+        // While the panel is hidden (display:none -> offsetParent null), skip the work
+        // but keep the loop alive so it resumes seamlessly when the tab is shown again.
+        if (watchEl && watchEl.offsetParent === null) { last = 0; requestAnimationFrame(tick); return }
+        const dt = last ? Math.min(0.05, (ts - last) / 1000) : 0
+        last = ts
+        onFrame(dt)
+        requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
+    }
+    return {
+      get playing() { return playing },
+      toggle() { playing = !playing; if (playing) start(); else gen++; return playing },
+    }
+  }
+
+  /** A Play/Pause button bound to a loop; keeps its own label and pressed state. */
+  function playButton(parent, anim) {
+    return button(parent, '▶ Play', (b) => {
+      const on = anim.toggle()
+      b.textContent = on ? '❚❚ Pause' : '▶ Play'
+      b.classList.toggle('on', on)
+    })
+  }
+
   /** A key/value readout block; returns set(key, value) and clear(). */
   function readout(parent) {
     const dl = el('dl', { class: 'readout' })
@@ -143,11 +177,57 @@
       this._render = null
       this.cssW = 1
       this.cssH = 1
+      this.zoom = 1 // user wheel zoom, on top of the panel's fit()
+      this.panX = 0 // user pan, world units
+      this.panY = 0
+      this.frame = 0 // increments each clear(), drives the rocket-flame flicker
       const ro = new ResizeObserver(() => this._resize())
       ro.observe(canvas.parentElement)
       this._resize()
+      this._initInteraction()
     }
     onResize(cb) { this._render = cb }
+    redraw() { if (this._render) this._render() }
+    resetView() { this.zoom = 1; this.panX = 0; this.panY = 0 }
+    /** World point under a canvas pixel, accounting for fit, zoom and pan. */
+    worldAt(px, py) {
+      return {
+        x: this.cx + this.panX + (px - this.cssW / 2) / this.scale,
+        y: this.cy + this.panY - (py - this.cssH / 2) / this.scale,
+      }
+    }
+    _initInteraction() {
+      const cv = this.canvas
+      cv.style.cursor = 'grab'
+      cv.style.touchAction = 'none'
+      cv.addEventListener('wheel', (e) => {
+        e.preventDefault()
+        const rect = cv.getBoundingClientRect()
+        const mx = e.clientX - rect.left, my = e.clientY - rect.top
+        const before = this.worldAt(mx, my)
+        this.zoom = Math.min(2000, Math.max(0.05, this.zoom * Math.exp(-e.deltaY * 0.0015)))
+        const after = this.worldAt(mx, my)
+        this.panX += before.x - after.x // keep the point under the cursor fixed
+        this.panY += before.y - after.y
+        this.redraw()
+      }, { passive: false })
+      let drag = false, lx = 0, ly = 0
+      cv.addEventListener('pointerdown', (e) => {
+        drag = true; lx = e.clientX; ly = e.clientY
+        cv.setPointerCapture(e.pointerId); cv.style.cursor = 'grabbing'
+      })
+      cv.addEventListener('pointermove', (e) => {
+        if (!drag) return
+        this.panX -= (e.clientX - lx) / this.scale
+        this.panY += (e.clientY - ly) / this.scale
+        lx = e.clientX; ly = e.clientY
+        this.redraw()
+      })
+      const end = () => { drag = false; cv.style.cursor = 'grab' }
+      cv.addEventListener('pointerup', end)
+      cv.addEventListener('pointercancel', end)
+      cv.addEventListener('dblclick', () => { this.resetView(); this.redraw() })
+    }
     _resize() {
       const dpr = window.devicePixelRatio || 1
       const rect = this.canvas.parentElement.getBoundingClientRect()
@@ -165,12 +245,14 @@
       this.cx = cx || 0
       this.cy = cy || 0
     }
-    get scale() {
+    get baseScale() {
       return (Math.min(this.cssW, this.cssH) / 2 - this.margin) / this.halfWidth
     }
-    sx(x) { return this.cssW / 2 + (x - this.cx) * this.scale }
-    sy(y) { return this.cssH / 2 - (y - this.cy) * this.scale }
+    get scale() { return this.baseScale * this.zoom }
+    sx(x) { return this.cssW / 2 + (x - this.cx - this.panX) * this.scale }
+    sy(y) { return this.cssH / 2 - (y - this.cy - this.panY) * this.scale }
     clear(bg) {
+      this.frame++
       this.ctx.fillStyle = bg || '#070b14'
       this.ctx.fillRect(0, 0, this.cssW, this.cssH)
     }
@@ -235,6 +317,31 @@
       c.stroke()
       c.restore()
     }
+    /** A little rocket at world (x,y), nose pointing along world heading (rad, +ccw). */
+    rocket(x, y, heading, size, color, flame) {
+      const c = this.ctx
+      const s = size
+      c.save()
+      c.translate(this.sx(x), this.sy(y))
+      c.rotate(Math.atan2(-Math.sin(heading), Math.cos(heading))) // world heading -> screen angle (y is down)
+      if (flame) {
+        const fl = s * (1.4 + 0.5 * Math.sin(this.frame * 0.6))
+        const g = c.createLinearGradient(-s * 0.9, 0, -s - fl, 0)
+        g.addColorStop(0, '#ffd36b'); g.addColorStop(0.5, '#ff7a1a'); g.addColorStop(1, 'rgba(255,80,0,0)')
+        c.fillStyle = g
+        c.beginPath(); c.moveTo(-s * 0.85, -s * 0.4); c.lineTo(-s - fl, 0); c.lineTo(-s * 0.85, s * 0.4); c.closePath(); c.fill()
+      }
+      c.fillStyle = '#c1440e' // fins
+      c.beginPath(); c.moveTo(-s * 0.55, s * 0.32); c.lineTo(-s * 1.05, s * 0.85); c.lineTo(-s * 0.3, s * 0.5); c.closePath(); c.fill()
+      c.beginPath(); c.moveTo(-s * 0.55, -s * 0.32); c.lineTo(-s * 1.05, -s * 0.85); c.lineTo(-s * 0.3, -s * 0.5); c.closePath(); c.fill()
+      c.fillStyle = color || '#e8eef8' // body + nose
+      c.beginPath()
+      c.moveTo(s * 1.5, 0); c.lineTo(s * 0.2, -s * 0.5); c.lineTo(-s * 0.9, -s * 0.5)
+      c.lineTo(-s * 0.9, s * 0.5); c.lineTo(s * 0.2, s * 0.5); c.closePath(); c.fill()
+      c.fillStyle = '#2c5a8c' // window
+      c.beginPath(); c.arc(s * 0.3, 0, s * 0.26, 0, TAU); c.fill()
+      c.restore()
+    }
     label(x, y, text, color, dx, dy) {
       const c = this.ctx
       const X = this.sx(x) + (dx == null ? 6 : dx)
@@ -297,7 +404,8 @@
       const controls = el('aside', { class: 'controls' })
       if (panel.hint) controls.appendChild(el('p', { class: 'hint' }, [panel.hint]))
       const canvas = el('canvas', { role: 'img', 'aria-label': panel.label + ' plot; the live values are in the adjacent readout panel' })
-      const stage = el('div', { class: 'stage' }, [canvas])
+      const hud = el('div', { class: 'hud' }, ['scroll: zoom  ·  drag: pan  ·  double-click: reset'])
+      const stage = el('div', { class: 'stage' }, [canvas, hud])
       sec.appendChild(controls)
       sec.appendChild(stage)
       host.appendChild(sec)
@@ -321,6 +429,6 @@
     })
   }
 
-  window.UI = { registerPanel, el, fmt, slider, select, checkbox, button, section, readout, Viewport, TAU }
+  window.UI = { registerPanel, el, fmt, slider, select, checkbox, button, section, readout, loop, playButton, Viewport, TAU }
   document.addEventListener('DOMContentLoaded', boot)
 })()

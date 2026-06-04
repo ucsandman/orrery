@@ -17,22 +17,22 @@
     label: 'Solar System',
     hint: 'The planets at any date, from the Standish model in the core. Drag the date or press Play. Switch between the inner planets and the full system (the scale jumps from ~1.5 AU to ~30 AU).',
     setup({ controls, vp }) {
-      const st = { year: 2000, speed: 2, inner: true, playing: false }
+      const st = { year: 2000, speed: 2, inner: true }
       let rings = []
-      let lastTs = 0
 
       const t = UI.section(controls, 'Time')
       const yearCtl = UI.slider(t, { label: 'epoch (year)', min: 1900, max: 2050, step: 0.02, value: st.year, fmt: (v) => v.toFixed(1) }, (v) => { st.year = v; render() })
       UI.slider(t, { label: 'play speed', min: 0.1, max: 25, step: 0.1, value: st.speed, fmt: (v) => v.toFixed(1) + ' yr/s' }, (v) => { st.speed = v })
-      const playBtn = UI.button(controls, '▶ Play', () => {
-        st.playing = !st.playing
-        playBtn.textContent = st.playing ? '❚❚ Pause' : '▶ Play'
-        playBtn.classList.toggle('on', st.playing)
-        if (st.playing) { lastTs = 0; requestAnimationFrame(tick) }
-      })
+      const anim = UI.loop((dt) => {
+        st.year += dt * st.speed
+        if (st.year > 2050) st.year = 1900
+        yearCtl.set(st.year)
+        render()
+      }, vp.canvas)
+      UI.playButton(controls, anim)
       UI.select(UI.section(controls, 'View'), { label: 'planets', options: [
         { label: 'Inner (Mercury–Mars)', value: true }, { label: 'All eight', value: false },
-      ] }, (v) => { st.inner = v; buildRings(); render() })
+      ] }, (v) => { st.inner = v; buildRings(); vp.resetView(); render() }) // reframe cleanly (the scale jumps ~18x)
 
       const out = UI.readout(UI.section(controls, 'Heliocentric distance'))
 
@@ -54,19 +54,6 @@
           }
           return { planet, pts }
         })
-      }
-
-      function tick(ts) {
-        if (!st.playing) return
-        if (lastTs) {
-          const wall = Math.min(0.05, (ts - lastTs) / 1000)
-          st.year += wall * st.speed
-          if (st.year > 2050) st.year = 1900
-          yearCtl.set(st.year) // pass the number; the slider's own fmt renders it
-        }
-        lastTs = ts
-        render()
-        requestAnimationFrame(tick)
       }
 
       function render() {

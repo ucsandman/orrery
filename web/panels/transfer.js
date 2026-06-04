@@ -23,6 +23,8 @@
     setup({ controls, vp }) {
       const mu = O.MU_SUN
       const st = { r1: 1.0, r2: 1.52, sweep: 150, tofDays: 259, multi: false }
+      let af = 0 // animation fraction along the transfer arc
+      let arcPts = []
 
       const geo = UI.section(controls, 'Geometry')
       UI.slider(geo, { label: 'inner radius r₁', min: 0.4, max: 2.0, step: 0.01, value: st.r1, fmt: (v) => v.toFixed(2) + ' AU' }, (v) => { st.r1 = v; render() })
@@ -31,6 +33,8 @@
       const flight = UI.section(controls, 'Flight')
       UI.slider(flight, { label: 'time of flight', min: 30, max: 1200, step: 1, value: st.tofDays, fmt: (v) => v + ' days' }, (v) => { st.tofDays = v; render() })
       UI.checkbox(flight, 'show multi-revolution branches', false, (v) => { st.multi = v; render() })
+      const anim = UI.loop((dt) => { af = (af + dt / 5) % 1; render() }, vp.canvas) // fly the transfer in ~5 s
+      UI.playButton(flight, anim)
 
       const out = UI.readout(UI.section(controls, 'Result'))
 
@@ -84,12 +88,19 @@
             vp.poly(arc(r1v, b.v1, tof, 360), { stroke: 'rgba(140,160,210,0.35)', width: 1, dash: [4, 4] })
           }
         }
-        // Primary transfer arc.
-        vp.poly(arc(r1v, primary.v1, tof, 200), { stroke: '#8fe6c0', width: 2 })
+        // Primary transfer arc (equal-time samples, so the rocket flies it at the real
+        // Kepler pace: faster near the Sun, slower far out).
+        arcPts = arc(r1v, primary.v1, tof, 200)
+        vp.poly(arcPts, { stroke: '#8fe6c0', width: 2 })
 
         // Endpoints.
         vp.disc(r1v.x, r1v.y, 5, '#5b9bd5'); vp.label(r1v.x, r1v.y, 'depart', '#5b9bd5')
         vp.disc(r2v.x, r2v.y, 5, '#c1440e'); vp.label(r2v.x, r2v.y, 'arrive', '#e0764a')
+
+        // The rocket flying the transfer.
+        const idx = Math.min(arcPts.length - 2, Math.max(0, Math.floor(af * (arcPts.length - 1))))
+        const a0 = arcPts[idx], a1 = arcPts[idx + 1]
+        vp.rocket(a0[0], a0[1], Math.atan2(a1[1] - a0[1], a1[0] - a0[0]), 8, '#e8eef8', anim.playing)
 
         // Burns: transfer velocity minus local circular velocity.
         const c1 = circVel(r1v, r1), c2 = circVel(r2v, r2)
