@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "check": "tsc --noEmit && vitest run",
     "build:web": "esbuild src/index.ts --bundle --format=iife --global-name=Orrery --outfile=web/orrery-core.js",
-    "web": "node web/serve.mjs"
+    "web": "node web/serve.mjs",
+    "verify:neo": "node web/check-neo.mjs"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

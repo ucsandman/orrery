@@ -105,6 +105,7 @@ main#panels { flex: 1; position: relative; min-height: 0; }
 }
 .btn:hover { background: #1a2c49; border-color: var(--accent); }
 .btn.on { background: #1d3a5c; border-color: var(--accent); color: #fff; }
+.btn:disabled { opacity: 0.5; cursor: default; }
 
 /* Keyboard focus ring (kept off mouse clicks via :focus-visible). */
 .tab:focus-visible,

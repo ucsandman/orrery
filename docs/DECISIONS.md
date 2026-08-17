@@ -5,7 +5,7 @@
 
 # Recovered decisions (claude-mem archive)
 
-15 decisions recovered 2026-08-11 from the claude-mem store before it was pruned. Source window 2026-04-06 to 2026-06-11. Full archive with observations and session summaries: `C:\Projectsrchives\claude-mem-2026-08-11\`.
+15 decisions recovered 2026-08-11 from the claude-mem store before it was pruned. Source window 2026-04-06 to 2026-06-11. Full archive with observations and session summaries: `C:\Projects\archives\claude-mem-2026-08-11\`.
 
 ## 2026-06-04 — Multi-agent design workflow for Orrery astrodynamics core architecture
 
@@ -185,4 +185,36 @@ Rigorous testing framework with hard constraints on tolerance changes and depend
 - Tolerance changes require cited justification written in spec
 - Success criteria: all acceptance criteria in SPEC-external.md pass, all thresholds in bar-external.json meet targets, three consecutive break pushes with zero unexplained disagreements
 - Hard constraint: never loosen tolerance to pass tests, never edit committed Horizons fixtures to pass
+
+---
+
+## 2026-08-16: Playground fetches NASA NeoWs directly from the browser, no proxy
+
+The near-Earth asteroid control in web/panels/solar.js calls api.nasa.gov from the
+page. No server, no proxy, no environment variable.
+
+- NeoWs sends Access-Control-Allow-Origin: * on every response, verified live, so a
+  static page can call it directly. web/serve.mjs stays a bare file server and the
+  Vercel deploy stays static with no environment variables.
+- One request to /neo/browse returns twenty objects with complete orbital_data, so the
+  dropdown and every element set come from a single call. Rejected: hardcoding SPK-IDs
+  and calling /neo/{id} per selection, which burns the rate limit per click.
+- The key is NASA's public DEMO_KEY, rate limited per IP, with ?nasa_key=YOURKEY in the
+  page URL as the escape hatch. Rejected: an environment variable, because a static
+  bundle cannot hide one and CLAUDE.md reserves env vars for the API layer.
+- The button gates the request, so the playground stays fully offline until pressed.
+- The orbit is anchored at NeoWs's perihelion_time, where the true anomaly is 0 by
+  definition, and advanced with the core's propagateUniversal. Rejected: hand-rolling
+  the mean to eccentric to true chain in the panel and calling danby per frame, which
+  would have been the only direct danby call anywhere outside src/ and would have made
+  web/README.md's "no orbital mechanics of its own" claim false.
+- Verified by web/check-neo.mjs, run by hand with network like
+  verify-external/fixtures/fetch_horizons.py. It checks the distance against NASA's own
+  published perihelion and aphelion (external oracle, and because the propagation is
+  time-based this also covers the time base, the period and mu) and against an
+  independent mean-anomaly/danby/coeToRv route that reads four catalogue fields the
+  panel never touches. Neither check can see an angle-unit or length-unit error,
+  because both cancel; that is stated in the script rather than papered over.
+
+Files: `web/panels/solar.js`, `web/check-neo.mjs`, `web/styles.css`
 
